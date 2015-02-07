@@ -25,19 +25,10 @@
       var Route = Router.Route;
       var RouteHandler = Router.RouteHandler;
 
-      var LoginButton = React.createClass({
-        getInitialState: function() {
-          if(FB) {
-            return {
-              loggedIn: FB.getAccessToken()
-            };
-          } else {
-            return {
-              loggedIn: false
-            };
-          }
-        },
+      var LOGGED_IN = false;
+      var TOKEN = "";
 
+      var LoginButton = React.createClass({
         componentDidMount: function() {
           window.fbAsyncInit = function() {
             FB.init({
@@ -113,6 +104,8 @@
 
       var FreeBox = React.createClass({
         onLogin: function(token) {
+          LOGGED_IN = true;
+          TOKEN = token;
           this.setState({
             loggedIn : true,
             token : token
@@ -121,20 +114,7 @@
         },
 
         getInitialState: function() {
-          return {loggedIn: false, token: ""};
-        },
-
-        shouldComponentUpdate: function(nextProps, nextState) {
-          return !(nextState.token === "");
-        },
-
-        componentDidMount: function() {
-          var token = ""; //FB.getAccessToken();
-          if(token) {
-            return {loggedIn: true, token: token};
-          } else {
-            return {loggedIn: false, token: ""};
-          }
+          return {loggedIn: LOGGED_IN, token: TOKEN};
         },
 
         render: function() {
@@ -196,15 +176,49 @@
         }
       });
 
+      /////////////
+
       var Cast = React.createClass({
         mixins: [Router.State],
 
         render: function() {
           return (
-            <div className="Cast">{this.getParams().when}</div>
+            <div className="Cast">
+              {this.getParams().when}
+              <TimeBox />
+              <TimeBox />
+              <BlurbBox />
+              <SubmitBox />
+            </div>
           );
         }
       });
+
+      var TimeBox = React.createClass({
+        render: function() {
+          return (
+            <div className="TimeBox">Enter Time</div>
+          );
+        }
+      });
+
+      var BlurbBox = React.createClass({
+        render: function() {
+          return (
+            <div className="BlurbBox">What do you want to do?</div>
+          );
+        }
+      });
+
+      var SubmitBox = React.createClass({
+        render: function() {
+          return (
+            <div className="SubmitBox">GOGO GOG</div>
+          );
+        }
+      });
+
+      /////////////
 
       var Reel = React.createClass({
         render: function() {
