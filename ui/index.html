@@ -28,6 +28,20 @@
       var LOGGED_IN = false;
       var TOKEN = "";
 
+      var API_ENDPOINT = "http://localhost:8000/";
+
+      $.ajax.fake.registerWebservice('http://api.friendcast.io/cast', function(data) {
+          return [{
+              "success": "true"
+          }]
+      });
+
+      $.ajax.fake.registerWebservice('http://api.friendcast.io/reel', function(data) {
+          return [{
+              "friends": ""
+          }]
+      });
+
       var LoginButton = React.createClass({
         componentDidMount: function() {
           window.fbAsyncInit = function() {
@@ -121,8 +135,8 @@
           if(this.state.loggedIn) {
             return (
               <div className="freeBox">
-                <FreeButton time="now" />
-                <FreeButton time="later" />
+                <FreeButton when="now" />
+                <FreeButton when="later" />
               </div>
             );
           } else {
@@ -146,9 +160,9 @@
       var FreeButton = React.createClass({
         render: function() {
           return (
-            <Link to={"/cast/" + this.props.time} >
-              <button className="FreeButton btn btn-primary btn-lg btn-block" type="button" id={this.props.time}>
-                {this.props.time}
+            <Link to={"/cast/" + this.props.when} >
+              <button className="FreeButton btn btn-primary btn-lg btn-block" type="button" id={this.props.when}>
+                {this.props.when}
               </button>
             </Link>
           );
@@ -181,14 +195,48 @@
       var Cast = React.createClass({
         mixins: [Router.State],
 
+        getInitialState: function() {
+          var startTime = "";
+          if(this.getParams().when === "now") {
+            startTime = new Date().getHours();
+          }
+          return {
+            startTime: startTime,
+            endTime: (startTime + 1) % 24,
+            blurb: ""
+          };
+        },
+
+        goFish: function() {
+          var send = {
+            startTime: this.state.startTime,
+            endTime: this.state.endTime,
+            blurb: this.state.blurb
+          }
+
+          $.ajax({
+            type: "POST",
+            fake: true,
+            url: API_ENDPOINT + "/cast",
+            data: data,
+            dataType: 'json',
+            success: function(data) {
+              this.setState({data: data});
+            }.bind(this),
+            error: function(xhr, status, err) {
+              console.error(this.props.url, status, err.toString());
+            }.bind(this)
+          });
+        },
+
         render: function() {
           return (
             <div className="Cast">
               {this.getParams().when}
-              <TimeBox />
-              <TimeBox />
-              <BlurbBox />
-              <SubmitBox />
+              <TimeBox onChange={this.updateStartTime} />
+              <TimeBox onChange={this.updateEndTime}/>
+              <BlurbBox onChange={this.updateBlurb}/>
+              <SubmitBox submitIt={this.goFish}/>
             </div>
           );
         }
@@ -196,9 +244,26 @@
 
       var TimeBox = React.createClass({
         render: function() {
-          return (
-            <div className="TimeBox">Enter Time</div>
-          );
+          var timeNow = new Date()
+          var hour = timeNow.getHours();
+          var numRows = 24;
+          var rows = [];
+          for (var i=0; i < numRows; i++) {
+            var thisHour = (hour + i) % 24;
+            var ampm = "";
+            if(thisHour > 12) {
+              ampm = (thisHour - 12) + " PM";
+            } else if(thisHour === 0) {
+              ampm = "12 AM";
+            } else if(thisHour === 12) {
+              ampm = "12 PM";
+            } else {
+              ampm = thisHour + " AM";
+            } 
+            rows.push(<option value={(hour + i) % 24}>{ampm}</option>);
+          }
+          return <select className="TimeBox">{rows}</select>;
+
         }
       });
 
@@ -213,7 +278,11 @@
       var SubmitBox = React.createClass({
         render: function() {
           return (
-            <div className="SubmitBox">GOGO GOG</div>
+            <Link to="/reel" onClick={this.props.submitIt}>
+              <button className="SubmitBox btn btn-primary btn-lg btn-block" type="button">
+                See who's around
+              </button>
+            </Link>
           );
         }
       });
@@ -223,7 +292,9 @@
       var Reel = React.createClass({
         render: function() {
           return (
-            <div className="Reel"></div>
+            <div className="Reel">
+              I'M REEELING
+            </div>
           );
         }
       });
@@ -245,11 +316,12 @@
         </Route>
       );
 
-
-      Router.run(routes, Router.HistoryLocation, function (Handler) {
+      //Router.HistoryLocation,
+      Router.run(routes, function (Handler) {
         React.render(<Handler/>, document.body);
       });
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react-router/0.11.6/react-router.min.js"></script>
+    <script src=""></script>
   </body>
 </html>
