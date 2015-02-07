@@ -1,0 +1,241 @@
+<html>
+  <head>
+    <title>Hello React</title>
+    <script src="http://fb.me/react-0.12.2.js"></script>
+    <script src="http://fb.me/JSXTransformer-0.12.2.js"></script>
+    <script src="http://code.jquery.com/jquery-1.10.0.min.js"></script>
+    <script src="libs/jquery.ajax.fake.js"></script>
+    <title>FriendCast</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="style.css">
+  </head>
+  <body>
+    <div id="container"></div>
+    <script type="text/jsx">
+      var Router = ReactRouter;
+      var DefaultRoute = Router.DefaultRoute;
+      var NotFoundRoute = Router.NotFoundRoute;
+      var Link = Router.Link;
+      var Route = Router.Route;
+      var RouteHandler = Router.RouteHandler;
+
+      var LoginButton = React.createClass({
+        getInitialState: function() {
+          if(FB) {
+            return {
+              loggedIn: FB.getAccessToken()
+            };
+          } else {
+            return {
+              loggedIn: false
+            };
+          }
+        },
+
+        componentDidMount: function() {
+          window.fbAsyncInit = function() {
+            FB.init({
+              appId      : '1395623010744563',
+              cookie     : true,  // enable cookies to allow the server to access
+                                // the session
+              xfbml      : true,  // parse social plugins on this page
+              version    : 'v2.2'
+            });
+
+            FB.getLoginStatus(function(response) {
+              console.log("getLoginStatus");
+              this.statusChangeCallback(response);
+            }.bind(this));
+          }.bind(this);
+
+          // Load the SDK asynchronously
+          (function(d, s, id){
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) {return;}
+            js = d.createElement(s); js.id = id;
+            js.src = "//connect.facebook.net/en_US/sdk.js";
+            fjs.parentNode.insertBefore(js, fjs);
+          }(document, 'script', 'facebook-jssdk'));
+        },
+
+        // This is called with the results from from FB.getLoginStatus().
+        statusChangeCallback: function(response) {
+          console.log('statusChangeCallback');
+          console.log(response);
+          // The response object is returned with a status field that lets the
+          // app know the current login status of the person.
+          // Full docs on the response object can be found in the documentation
+          // for FB.getLoginStatus().
+          if (response.status === 'connected') {
+            this.props.onLogin(FB.getAccessToken());
+          } else if (response.status === 'not_authorized') {
+            // The person is logged into Facebook, but not your app.
+            document.getElementById('status').innerHTML = 'Please log ' +
+              'into this app.';
+          } else {
+            // The person is not logged into Facebook, so we're not sure if
+            // they are logged into this app or not.
+            document.getElementById('status').innerHTML = 'Please log ' +
+            'into Facebook.';
+          }
+        },
+
+        // This function is called when someone finishes with the Login
+        // Button.  See the onlogin handler attached to it in the sample
+        // code below.
+        checkLoginState: function() {
+          console.log("checkLoginState");
+          FB.getLoginStatus(function(response) {
+            this.statusChangeCallback(response);
+          }.bind(this));
+        },
+
+        handleClick: function() {
+          FB.login(this.checkLoginState());
+        },
+
+        render: function() {
+          return (
+            <div className="LoginButton">
+              <a href="#" onClick={this.handleClick}>Login</a>
+              <div id="status">
+              </div>
+            </div>
+          );
+        }
+      });
+
+      var FreeBox = React.createClass({
+        onLogin: function(token) {
+          this.setState({
+            loggedIn : true,
+            token : token
+          });
+          console.log("logged in");
+        },
+
+        getInitialState: function() {
+          return {loggedIn: false, token: ""};
+        },
+
+        shouldComponentUpdate: function(nextProps, nextState) {
+          return !(nextState.token === "");
+        },
+
+        componentDidMount: function() {
+          var token = ""; //FB.getAccessToken();
+          if(token) {
+            return {loggedIn: true, token: token};
+          } else {
+            return {loggedIn: false, token: ""};
+          }
+        },
+
+        render: function() {
+          if(this.state.loggedIn) {
+            return (
+              <div className="freeBox">
+                <FreeButton time="now" />
+                <FreeButton time="later" />
+              </div>
+            );
+          } else {
+            return (
+              <LoginButton onLogin={this.onLogin} />
+            );
+          }
+        }
+      });
+
+      var LogoBox = React.createClass({
+        render: function() {
+          return (
+            <div className="LogoBox">
+              Friend<b>Cast</b>
+            </div>
+          );
+        }
+      });
+
+      var FreeButton = React.createClass({
+        render: function() {
+          return (
+            <Link to={"/cast/" + this.props.time} >
+              <button className="FreeButton btn btn-primary btn-lg btn-block" type="button" id={this.props.time}>
+                {this.props.time}
+              </button>
+            </Link>
+          );
+        }
+      });
+
+      var App = React.createClass({
+        render: function() {
+          return (
+            <div className="App">
+              <RouteHandler/>
+            </div>
+          );
+        }
+      });
+
+      var Index = React.createClass({
+        render: function() {
+          return (
+            <div className="Index">
+              <LogoBox />
+              <FreeBox />
+            </div>
+          );
+        }
+      });
+
+      var Cast = React.createClass({
+        mixins: [Router.State],
+
+        render: function() {
+          return (
+            <div className="Cast">{this.getParams().when}</div>
+          );
+        }
+      });
+
+      var Reel = React.createClass({
+        render: function() {
+          return (
+            <div className="Reel"></div>
+          );
+        }
+      });
+
+      var NotFound = React.createClass({
+        render: function() {
+          return (
+            <div className="NotFound"></div>
+          );
+        }
+      });
+
+      var routes = (
+        <Route name="app" handler={App} path="/">
+          <DefaultRoute handler={Index} />
+          <Route name="cast" handler={Cast} path="/cast/:when"/>
+          <Route name="reel" handler={Reel} path="/reel"/>
+          <NotFoundRoute handler={NotFound} />
+        </Route>
+      );
+
+
+      Router.run(routes, Router.HistoryLocation, function (Handler) {
+        React.render(<Handler/>, document.body);
+      });
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-router/0.11.6/react-router.min.js"></script>
+  </body>
+</html>

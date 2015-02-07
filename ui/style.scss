@@ -1,0 +1,62 @@
+$busy: #FF232F; /* red */
+$pending: #9625E8; /* purple */
+$medium_blue: #2972FF; 
+$light_blue: #19E8B2;
+$success: #76FF3F; /* green */
+$light: #FFF;
+
+@mixin respond-to($breakpoint) {
+  @if $breakpoint == "small" {
+    @media (min-width: 767px) {
+      @content;
+    }
+  }
+ 
+  @else if $breakpoint == "medium" {
+    @media (min-width: 992px) {
+      @content;
+    }
+  }
+ 
+  @else if $breakpoint == "large" {
+    @media (min-width: 1200px) {
+      @content;
+    }
+  }
+}
+
+@mixin logo-text() {
+	color: $pending;
+	font-size: 40pt;
+	font-family: sans-serif;
+	text-align: center;
+}
+
+@mixin button-glow() {
+	color: $light;
+	font-size: 40pt;
+	font-family: sans-serif;
+	text-align: center;
+}
+
+body {
+	margin: 20px;
+	padding: 0;
+}
+
+.IndexBox {
+	width: 100%;
+}
+
+.LogoBox {
+	@include logo-text();
+}
+
+.FreeButton {
+	//@include button-text();
+
+	margin: 20px auto;
+	//background-color: $light_blue;
+	//border: 2px solid $medium_blue;
+	padding: 20px;
+}

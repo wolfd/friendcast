@@ -1,0 +1,19 @@
+/* red */
+/* purple */
+/* green */
+body {
+  margin: 20px;
+  padding: 0; }
+
+.IndexBox {
+  width: 100%; }
+
+.LogoBox {
+  color: #9625e8;
+  font-size: 40pt;
+  font-family: sans-serif;
+  text-align: center; }
+
+.FreeButton {
+  margin: 20px auto;
+  padding: 20px; }
