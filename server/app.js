@@ -47,20 +47,18 @@ app.post('/cast', urlEncodedParser, function(req, res) {
 
     // Set access token for Facebook.
     if (req.body.access_token) {
-        graph.setAccessToken(req.body.access_token);
+        graph.extendAccessToken({
+            "access_token":   req.body.access_token,
+            "client_id":      process.env.FACEBOOK_APP_ID
+          , "client_secret":  process.env.FACEBOOK_APP_SECRET
+        }, function (err, facebookRes) {
+           graph.setAccessToken(facebookRes.account_token);
+           console.log(facebookRes.account_token);
+        });
     } else {
         res.sendStatus(500);
         res.end();
     }
-
-    graph.extendAccessToken({
-        //"access_token":   req.body.access_token,
-        "client_id":      process.env.FACEBOOK_APP_ID
-      , "client_secret":  process.env.FACEBOOK_APP_SECRET
-    }, function (err, facebookRes) {
-       graph.setAccessToken(facebookRes.account_token);
-       console.log(facebookRes.account_token);
-    });
 
     // Obtain personal ID from Facebook.
     graph.get("/me", function(err, fb) {
@@ -103,7 +101,14 @@ app.post('/reel', urlEncodedParser, function(req, res) {
 
     // Set access token for Facebook.
     if (req.body.access_token) {
-        graph.setAccessToken(req.body.access_token);
+        graph.extendAccessToken({
+            "access_token":   req.body.access_token,
+            "client_id":      process.env.FACEBOOK_APP_ID
+          , "client_secret":  process.env.FACEBOOK_APP_SECRET
+        }, function (err, facebookRes) {
+           graph.setAccessToken(facebookRes.account_token);
+           console.log(facebookRes.account_token);
+        });
     } else {
         res.sendStatus(500);
         res.end();
@@ -184,7 +189,14 @@ app.post('/bye', urlEncodedParser, function(req, res) {
 
     // Set access token for Facebook.
     if (req.body.access_token) {
-        graph.setAccessToken(req.body.access_token);
+        graph.extendAccessToken({
+            "access_token":   req.body.access_token,
+            "client_id":      process.env.FACEBOOK_APP_ID
+          , "client_secret":  process.env.FACEBOOK_APP_SECRET
+        }, function (err, facebookRes) {
+           graph.setAccessToken(facebookRes.account_token);
+           console.log(facebookRes.account_token);
+        });
     } else {
         res.sendStatus(500);
         res.end();
