@@ -45,8 +45,6 @@ NEEDS:
 */
 app.post('/cast', urlEncodedParser, function(req, res) {
 
-    console.log(req.body);
-
     // Set access token for Facebook.
     if (req.body.access_token) {
         graph.setAccessToken(req.body.access_token);
