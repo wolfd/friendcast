@@ -64,13 +64,12 @@ app.post('/cast', urlEncodedParser, function(req, res) {
                 if (record) {
                     // TODO update would go here....
                 } else {
-                    models.Free.create({ fb_user_id: fb.id,
+                    models.Free.create({
+                        fb_user_id: fb.id,
                         start_time: req.body.start_time,
                         end_time: req.body.end_time,
                         blurb: req.body.blurb,
                         done: false
-                    }).then(function(stuff) {
-                        console.log("STUFF:\n" + stuff);
                     });
                 }
             });
