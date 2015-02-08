@@ -4,6 +4,7 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var graph = require('fbgraph');
+var q = require('q');
 
 // Init app.
 var app = express();
@@ -138,34 +139,32 @@ app.post('/reel', urlEncodedParser, function(req, res) {
 
                             var returnable = [];
 
-                            records.map(function(curVal, index, array) {
-                                returnable.push(curVal.dataValues);
-                            }, returnable);
+                            addReturnable = function(cf) {
+                                returnable.push(cf);
+                                console.log(returnable);
+                                if(returnable.length === records.length) {
+                                    res.setHeader('Access-Control-Allow-Origin', '*');
+                                    res.end(JSON.stringify(returnable));
+                                    return;
+                                }
+                            };
 
-                            console.log(returnable);
+                            returnable = records.forEach(function(curVal) {
+                                graph.get("/" + records[i].dataValues.fb_user_id, function(err, fb) {
+                                    if (fb.id) {
+                                        currFriend["first_name"] = fb.first_name;
+                                        currFriend["last_name"] = fb.last_name;
+                                    }
 
-                            // var jsonObject = {};
-                            // jsonObject["friends"] = [];
-                            // for (var i = 0; i < records.length; i++) {
-                            //     jsonObject["friends"][i] = {};
-                            //     var currFriend = jsonObject["friends"][i];
-                            //
-                            //     graph.get("/" + records[i].dataValues.fb_user_id, function(err, fb) {
-                            //         if (fb.id) {
-                            //             currFriend["first_name"] = fb.first_name;
-                            //             currFriend["last_name"] = fb.last_name;
-                            //         }
-                            //
-                            //         if (records) {
-                            //             currFriend["start_time"] = records[i].dataValues.start_time;
-                            //             currFriend["end_time"] = records[i].dataValues.end_time;
-                            //             currFriend["blurb"] = records[i].dataValues.blurb;
-                            //         }
-                            //     });
-                            // }
+                                    if (records) {
+                                        currFriend["start_time"] = records[i].dataValues.start_time;
+                                        currFriend["end_time"] = records[i].dataValues.end_time;
+                                        currFriend["blurb"] = records[i].dataValues.blurb;
+                                    }
 
-                            res.setHeader('Access-Control-Allow-Origin', '*');
-                            res.end(JSON.stringify(returnable));
+                                    addReturnable(currFriend);
+                                });
+                            });
                         });
                     }
                 });
