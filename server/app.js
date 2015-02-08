@@ -144,7 +144,7 @@ app.post('/reel', urlEncodedParser, function(req, res) {
                                 if(returnable.length === records.length) {
                                     console.log("I'm done here.", JSON.stringify(returnable));
                                     res.setHeader('Access-Control-Allow-Origin', '*');
-                                    res.send(JSON.stringify(returnable)).end();
+                                    res.send(JSON.stringify(returnable));//.end();
                                     console.log("I'm really done here.", res);
                                 }
                             };
