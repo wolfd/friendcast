@@ -125,6 +125,7 @@ app.post('/reel', urlEncodedParser, function(req, res) {
     graph.get("/me", function(err, fb) {
         if (fb.id) {
             models.Free.find({where: { fb_user_id: fb.id }}).then(function(myAccount) {
+                console.log(myAccount);
                 myStartTime = myAccount["start_time"];
                 myEndTime = myAccount["end_time"];
             });
