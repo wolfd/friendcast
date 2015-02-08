@@ -292,7 +292,7 @@
       var BlurbBox = React.createClass({
         render: function() {
           return (
-            <label>What do you want to do?<input type="text" className="BlurbBox"/></label>
+            <label>What do you want to do?<input type="text" className="BlurbBox" onChange={this.fcChange}/></label>
           );
         }
       });
