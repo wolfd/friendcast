@@ -157,6 +157,8 @@ app.post('/reel', urlEncodedParser, function(req, res) {
             }
         }
 
+        console.log(jsonObject);
+
         res.end(JSON.stringify(jsonObject));
     });
 });
