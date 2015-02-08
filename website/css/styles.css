@@ -180,7 +180,7 @@ Clearfix
 Headings
 ========================================================================== */
 
-.hero h1 { font-size: 60px; font-weight: bolder; color: #fff; letter-spacing: -1px; margin: 75px 0 130px 0; opacity: 1.0;}
+.hero h1 { font-size: 60px; font-weight: bolder; color: #fff; letter-spacing: -1px; margin: 75px 0 150px 0; opacity: 1.0; text-shadow: 2px 2px #22234C;}
 .download-now h1 { font-size: 55px; font-weight: bolder; color: #fff; margin: 120px 0 150px 0; }
 /* ==========================================================================
 Custom Styles
@@ -195,8 +195,8 @@ nav ul li a:hover, nav ul li a:focus { color: rgba(255, 255, 255, 1); text-decor
 .pull { display: none; }
 .hero { background: url('../img/boston.jpg') no-repeat center center; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover; background-size: cover; padding: 65px 0; height: auto; opacity: .8}
 .darken {background-image: linear-gradient(rgba(0, 0, 0, 0.5),rgba(0, 0, 0, 0.5)),url('../img/boston.jpg');}
-.hero p { color: #fff; font-style: italic; font-size: 24px; opacity: 1.0; font-weight: bolder; }
-.hero a { color: #fff; }
+.hero p { color: #fff; font-style: italic; font-size: 24px; opacity: 1.0; font-weight: bolder; text-shadow: 2px 2px #22234C;}
+.hero a { color: #fff; text-shadow: 2px 2px #22234C;}
 .hero-play-btn { height: 99px; width: 99px; background: url('../img/play-btn.png') no-repeat center center; display: block; text-indent: -99999px; margin: 80px auto 260px; transition: all 1s ease; -moz-transition: all 1s ease; -webkit-transition: all 1s ease; -o-transition: all 1s ease; }
 .hero-play-btn:hover, .hero-play-btn:focus { transform: translate(0, -15px); -webkit-transform: translate(0, -15px); -o-transform: translate(0, -15px); -moz-transform: translate(0, -15px); }
 .get-started-btn { background-color: #2A27E8; padding: 20px 100px; border-radius: 3px; -webkit-border-radius: 3px; -moz-border-radius: 3px; font-size: 22px; letter-spacing: 2px; box-shadow: inset 0px 1px 0px rgba(255, 255, 255, 0.4); transition: all 0.5s ease; -moz-transition: all 0.5s ease; -webkit-transition: all 0.5s ease; -o-transition: all 0.5s ease; display: inline-block; }
