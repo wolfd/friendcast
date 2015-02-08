@@ -127,6 +127,7 @@
       });
 
       var FreeBox = React.createClass({
+        mixins: [Router.Navigation],
         onLogin: function(token) {
           LOGGED_IN = true;
           TOKEN = token;
@@ -135,6 +136,7 @@
             token : token,
           });
           console.log("logged in");
+          this.transitionTo('http://app.friendcast.com/');
         },
 
         getInitialState: function() {
