@@ -26,7 +26,6 @@ graph.setAppSecret(process.env.FACEBOOK_APP_SECRET);
 // Init database middleware.
 models.sequelize.sync().then(function () {
   var server = app.listen(app.get('port'), function() {});
-  server.on('error', onError);
   server.on('listening', onListening);
 
   function onListening() {
