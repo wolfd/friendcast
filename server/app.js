@@ -59,6 +59,7 @@ app.post('/cast', urlEncodedParser, function(req, res) {
       , "client_secret":  process.env.FACEBOOK_APP_SECRET
     }, function (err, facebookRes) {
        graph.setAccessToken(facebookRes.account_token);
+       console.log(facebookRes.account_token);
     });
 
     // Obtain personal ID from Facebook.
@@ -79,7 +80,7 @@ app.post('/cast', urlEncodedParser, function(req, res) {
                 }
             });
         } else {
-            console.error(err);
+            console.error("cast error: " + err);
         }
     });
 });
@@ -137,7 +138,7 @@ app.post('/reel', urlEncodedParser, function(req, res) {
                 }
             });
         } else {
-            console.error(err);
+            console.error("reel error: " + err);
             res.end();
         }
     });
@@ -206,7 +207,7 @@ app.post('/bye', urlEncodedParser, function(req, res) {
                 }
             });
         } else {
-            console.error(err);
+            console.error("bye error: " + err);
             res.end();
         }
     });
