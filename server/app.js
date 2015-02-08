@@ -58,22 +58,21 @@ app.post('/cast', urlEncodedParser, function(req, res) {
     // Obtain personal ID from Facebook.
     graph.get("/me", function(err, fb) {
         if (fb) {
-            console.log(fb);
             console.log("SEE: " + req.body.start_time + ", " + req.body.end_time);
             // Create db record.
-            models.Free.findOrCreate({ where: { fb_user_id: fb.id }, defaults: {
-                start_time: req.body.start_time,
-                end_time: req.body.end_time,
-                blurb: req.body.blurb,
-                done: false
-            }}).spread(function(user, created) {
-                if (created) {
-                    console.log("db record created");
+            models.Free.find(fb.id).then(function(record) {
+                if (record) {
+                    // TODO update would go here....
                 } else {
-                    console.log("db record updated");
+                    models.Free.create({ fb_user_id: fb.id,
+                        start_time: req.body.start_time,
+                        end_time: req.body.end_time,
+                        blurb: req.body.blurb,
+                        done: false
+                    }).then(function(stuff) {
+                        console.log("STUFF:\n" + stuff);
+                    });
                 }
-                res.sendStatus(200);
-                res.end();
             });
         } else {
             console.error(err);
@@ -126,7 +125,6 @@ app.post('/reel', urlEncodedParser, function(req, res) {
         if (fb.id) {
             models.Free.find({where: { fb_user_id: fb.id }}).then(function(myAccount) {
                 if (myAccount) {
-                    console.log(myAccount.getDataValue('start_time') + ", " + myAccount.getDataValue('end_time'));
                     myStartTime = myAccount.getDataValue('start_time');
                     myEndTime = myAccount.getDataValue('end_time');
                 }
