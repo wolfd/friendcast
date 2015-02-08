@@ -105,6 +105,7 @@ app.post('/reel', urlEncodedParser, function(req, res) {
     // Grab friend ids from Facebook.
     var friendIds = new Array();
     graph.get("/me/friends",  function(err, fb) {
+        console.log("FB DATA: " + fb.data);
         if (fb.data) {
             for (var i = 0; i < fb.data.length; i++) {
                 friendIds[friendIds.length] = fb.data[i].id;
