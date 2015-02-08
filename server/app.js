@@ -71,6 +71,7 @@ app.post('/cast', urlEncodedParser, function(req, res) {
                         blurb: req.body.blurb,
                         done: false
                     });
+                    res.end();
                 }
             });
         } else {
