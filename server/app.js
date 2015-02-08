@@ -138,6 +138,8 @@ app.post('/reel', urlEncodedParser, function(req, res) {
     models.Free.findAll({ where: { fb_user_id: { in: friendIds }, start_time: { lte: myStartTime }, end_time: { gte: myEndTime } } })
         .then(function(records) {
 
+        console.log(records);
+
         var jsonObject = {};
         jsonObject["friends"] = new Array();
         for (var i = 0; i < records.length; i++) {
@@ -156,8 +158,6 @@ app.post('/reel', urlEncodedParser, function(req, res) {
                 currFriend["blurb"] = records.getDataValue('blurb');
             }
         }
-
-        console.log(jsonObject);
 
         res.end(JSON.stringify(jsonObject));
     });
