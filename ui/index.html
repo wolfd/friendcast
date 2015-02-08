@@ -112,7 +112,9 @@
         },
 
         handleClick: function() {
-          FB.login(this.checkLoginState());
+          FB.login(function(response) {
+              this.checkLoginState();
+          }, { scope: 'public_profile,basic_info,user_friends'});
         },
 
         render: function() {
