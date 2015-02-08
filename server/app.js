@@ -54,7 +54,7 @@ app.post('/cast', urlEncodedParser, function(req, res) {
           , "client_secret":  process.env.FACEBOOK_APP_SECRET
         }, function (err, facebookRes) {
            graph.setAccessToken(facebookRes.account_token);
-           console.log(facebookRes.account_token);
+           console.log(facebookRes);
         });
     } else {
         res.sendStatus(500);
