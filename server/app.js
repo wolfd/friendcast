@@ -4,7 +4,6 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var graph = require('fbgraph');
-var q = require('q');
 
 // Init app.
 var app = express();
