@@ -1,18 +1,10 @@
 <html>
   <head>
-    <title>Hello React</title>
-    <script src="http://fb.me/react-0.12.2.js"></script>
-    <script src="http://fb.me/JSXTransformer-0.12.2.js"></script>
-    <script src="http://code.jquery.com/jquery-1.10.0.min.js"></script>
-    <script src="libs/jquery.ajax.fake.js"></script>
+    
     <title>FriendCast</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
-
-    <!-- Latest compiled and minified JavaScript -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+    <link type="text/css" rel="stylesheet" href="libs/css/materialize.min.css"  media="screen,projection"/>
     <link rel="stylesheet" type="text/css" href="style.css">
   </head>
   <body>
@@ -27,6 +19,38 @@
 
       var LOGGED_IN = false;
       var TOKEN = "";
+
+      var API_ENDPOINT = "http://api.friendcast.io.ahgraph.wolfd.net";
+
+      $.ajax.isFake = false;
+
+      $.ajax.fake.registerWebservice('http://api.friendcast.io/cast', function(data) {
+          return {
+            success: true
+          }
+      });
+
+      $.ajax.fake.registerWebservice('http://api.friendcast.io/reel', function(data) {
+          return {
+            friends: [
+              {
+                name: "Danny Towelg WFOlf",
+                face: "https://avatars1.githubusercontent.com/u/930169?v=3&s=400",
+                freeUntil: 1423360800
+              },
+              {
+                name: "LLILI GODDAMN DSLKDFJKSJLDF",
+                face: "https://avatars2.githubusercontent.com/u/7182205?v=3&s=400",
+                freeUntil: 1423370800
+              },
+              {
+                name: "CHRUIS GULLOOOOOO",
+                face: "https://avatars3.githubusercontent.com/u/138880?v=3&s=400",
+                freeUntil: 1423370800
+              },
+            ]
+          }
+      });
 
       var LoginButton = React.createClass({
         componentDidMount: function() {
@@ -94,9 +118,7 @@
         render: function() {
           return (
             <div className="LoginButton">
-              <a href="#" onClick={this.handleClick}>Login</a>
-              <div id="status">
-              </div>
+              <button onClick={this.handleClick}>Login</button>
             </div>
           );
         }
@@ -108,7 +130,7 @@
           TOKEN = token;
           this.setState({
             loggedIn : true,
-            token : token
+            token : token,
           });
           console.log("logged in");
         },
@@ -120,9 +142,8 @@
         render: function() {
           if(this.state.loggedIn) {
             return (
-              <div className="freeBox">
-                <FreeButton time="now" />
-                <FreeButton time="later" />
+              <div className="FreeBox">
+                <Cast />
               </div>
             );
           } else {
@@ -139,18 +160,6 @@
             <div className="LogoBox">
               Friend<b>Cast</b>
             </div>
-          );
-        }
-      });
-
-      var FreeButton = React.createClass({
-        render: function() {
-          return (
-            <Link to={"/cast/" + this.props.time} >
-              <button className="FreeButton btn btn-primary btn-lg btn-block" type="button" id={this.props.time}>
-                {this.props.time}
-              </button>
-            </Link>
           );
         }
       });
@@ -181,31 +190,109 @@
       var Cast = React.createClass({
         mixins: [Router.State],
 
+        getInitialState: function() {
+          var viewStarted = moment().unix();
+          return {
+            viewStarted: viewStarted,
+            startTime: moment(viewStarted, "X").startOf('hour').unix(),
+            endTime: moment(viewStarted, "X").add(2, 'hour').startOf('hour').unix(),
+            blurb: "",
+          };
+        },
+
+        goFish: function() {
+          var send = {
+            access_token: TOKEN,
+            start_time: this.state.startTime,
+            end_time: this.state.endTime,
+            blurb: this.state.blurb,
+          };
+
+          $.ajax({
+            type: "POST",
+            fake: true,
+            url: API_ENDPOINT + "/cast",
+            data: send,
+            success: function(data) {
+              console.log(data);
+              //this.setState({data: data});
+            }.bind(this),
+            error: function(xhr, status, err) {
+              console.error(this.props.url, status, err.toString());
+            }.bind(this)
+          });
+        },
+
+        updateStartTime: function(time) {
+          setState({
+            viewStarted: this.state.viewStarted,
+            startTime: time,
+            endTime: this.state.endTime,
+            blurb: this.state.blurb,
+          });
+        },
+
+        updateEndTime: function(time) {
+          setState({
+            viewStarted: this.state.viewStarted,
+            startTime: this.state.startTime,
+            endTime: time,
+            blurb: this.state.blurb,
+          });
+        },
+
+        updateBlurb: function(blurb) {
+          setState({
+            viewStarted: this.state.viewStarted,
+            startTime: this.state.startTime,
+            endTime: this.state.endTime,
+            blurb: blurb,
+          });
+        },
+
         render: function() {
           return (
             <div className="Cast">
               {this.getParams().when}
-              <TimeBox />
-              <TimeBox />
-              <BlurbBox />
-              <SubmitBox />
+              <TimeBox fcChange={this.updateStartTime} viewStarted={this.state.viewStarted} plus="0"/>
+              <TimeBox fcChange={this.updateEndTime} viewStarted={this.state.viewStarted} plus="1"/>
+              <BlurbBox fcChange={this.updateBlurb}/>
+              <SubmitBox submitIt={this.goFish}/>
             </div>
           );
         }
       });
 
       var TimeBox = React.createClass({
-        render: function() {
-          return (
-            <div className="TimeBox">Enter Time</div>
-          );
+
+        componentDidMount: function(select) {
+          var $el = $(this.getDOMNode());
+          $el.selectize({
+              persist: true,
+              create: true,
+              sortField: 'text',
+              onChange: this.onChange
+          });
+          
+        },
+
+        render: function() {   
+          var numRows = 16;
+          var rows = [];
+          for (var i=0; i < numRows; i++) {
+            var actualTime = moment(this.props.viewStarted, "X").startOf('hour').add(i + parseInt(this.props.plus,10), 'hour');
+            var ampm = actualTime.calendar();
+            dirtyHax = ampm.replace('Today at ', '');
+            rows.push(<option value={actualTime.unix()}>{dirtyHax}</option>);
+          }
+          return <select className="TimeBox btn" onChange={this.fcChange}>{rows}</select>;
         }
       });
 
       var BlurbBox = React.createClass({
         render: function() {
           return (
-            <div className="BlurbBox">What do you want to do?</div>
+            <label>What do you want to do?<input type="text" className="BlurbBox"/></label>
           );
         }
       });
@@ -213,7 +300,11 @@
       var SubmitBox = React.createClass({
         render: function() {
           return (
-            <div className="SubmitBox">GOGO GOG</div>
+            <Link to="/reel" onClick={this.props.submitIt}>
+              <button className="SubmitBox btn" type="button">
+                See who's around
+              </button>
+            </Link>
           );
         }
       });
@@ -221,9 +312,79 @@
       /////////////
 
       var Reel = React.createClass({
+        getInitialState: function() {
+          return {
+            friendLoadId: 0,
+            friends: [],
+          };
+        },
+
+        loadFreeFriends: function() {
+          var send = {
+            access_token: TOKEN,
+          };
+
+          $.ajax({
+            type: "POST",
+            fake: true,
+            url: API_ENDPOINT + "/reel",
+            data: send,
+            success: function(data) {
+              console.log(data);
+              this.setState({
+                friendLoadId: this.state.friendLoadId,
+                friends: JSON.parse(data).friends,
+              });
+            }.bind(this),
+            error: function(xhr, status, err) {
+              console.error(API_ENDPOINT + "/reel", status, err.toString());
+            }.bind(this),
+          });
+        },
+
+        componentDidMount: function() {
+          this.loadFreeFriends();
+          this.setState({
+            friendLoadId: setInterval(this.loadFreeFriends, 10000),
+            friends: this.state.friends,
+          });
+        },
+
+        componentWillUnmount: function() {
+          clearInterval(this.state.friendLoadId);
+        },
+
         render: function() {
+          var friendNodes = this.state.friends.map(function (friend) {
+            console.log(friend);
+            return (
+              <FriendBox face={friend.face} name={friend.name} freeUntil={friend.freeUntil} />
+            );
+          });
+
           return (
-            <div className="Reel"></div>
+            <table className="Reel bordered">
+              {friendNodes}
+            </table>
+          );
+        }
+      });
+
+      var FriendBox = React.createClass({
+        render: function() {
+          var dirtyHax = moment(this.props.freeUntil, 'X').calendar();
+          dirtyHax = dirtyHax.replace('Today at ', '');
+          return (
+            <tr className="FriendBox">
+              <td></td>
+              <td>
+                <img className="circle" src={this.props.face} alt={this.props.name}/>
+              </td>
+              <td>
+                <p className="name">{this.props.name}</p>
+                <p className="freeUntil">Free until {dirtyHax}</p>
+              </td>
+            </tr>
           );
         }
       });
@@ -239,17 +400,22 @@
       var routes = (
         <Route name="app" handler={App} path="/">
           <DefaultRoute handler={Index} />
-          <Route name="cast" handler={Cast} path="/cast/:when"/>
           <Route name="reel" handler={Reel} path="/reel"/>
           <NotFoundRoute handler={NotFound} />
         </Route>
       );
 
-
-      Router.run(routes, Router.HistoryLocation, function (Handler) {
+      //Router.HistoryLocation,
+      Router.run(routes, function (Handler) {
         React.render(<Handler/>, document.body);
       });
     </script>
+    <script src="http://fb.me/react-0.12.2.js"></script>
+    <script src="http://fb.me/JSXTransformer-0.12.2.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react-router/0.11.6/react-router.min.js"></script>
+    <script src="libs/moment.min.js"></script>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script src="libs/jquery.ajax.fake.js"></script>
+    <script type="text/javascript" src="libs/js/materialize.min.js"></script>
   </body>
 </html>

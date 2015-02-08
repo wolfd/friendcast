@@ -204,26 +204,14 @@ nav ul li a:hover, nav ul li a:focus { color: rgba(255, 255, 255, 1); text-decor
 .download-now { background: #6262D9 url('../img/ipadBG.png') no-repeat right 65px; background-size: 50%; }
 .download-now p { color: #fff; font-size: 16px; margin: 40px 30px 40px 0; line-height: 30px; }
 .download-btn { border: solid 3px #fff; border-radius: 3px; -webkit-border-radius: 3px; -moz-border-radius: 3px; font-size: 17px; letter-spacing: 2px; transition: all 0.5s ease; padding: 15px 70px; display: inline-block; color: #fff; margin-bottom: 185px; }
-.download-btn:hover, .download-btn:focus { text-decoration: none; border-color: #a58347; color: #a58347; }
-.testimonials { background: #5b6869 url('../img/tBG01.jpg') no-repeat left center; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover; background-size: cover; padding: 130px 0; }
-.features { background: #fff url('../img/arrowBG.png') no-repeat center -1px; padding: 70px 0; }
-.features p { color: #7a8387; font-size: 16px; word-spacing: 2px; line-height: 30px; }
-.features-leftcol { border-right: 1px solid rgba(208, 217, 226, 0.4); padding-right: 60px; }
-.features-rightcol { padding-left: 60px; }
+.download-btn:hover, .download-btn:focus { text-decoration: none; border-color: #191938; color: #191938; }
 .margin-bottom { margin-bottom: 70px; }
-.try-btn { background-color: #f69679; border-radius: 3px; -webkit-border-radius: 3px; -moz-border-radius: 3px; font-size: 17px; color: #fff; transition: all 0.5s ease; -moz-transition: all 0.5s ease; -webkit-transition: all 0.5s ease; -o-transition: all 0.5s ease; display: inline-block; padding: 15px 50px; margin: 70px 0 70px; }
-.try-btn:hover, .try-btn:focus { background-color: #e37857; color: #fff; text-decoration: none; }
-.design { padding: 100px 0; background-color: #f6f6f4; position: relative; }
-.flat-box { background-color: #fff; -webkit-box-shadow: 0px 3px 0px 0px rgba(234, 234, 234, 1); -moz-box-shadow: 0px 3px 0px 0px rgba(234, 234, 234, 1); box-shadow: 0px 3px 0px 0px rgba(234, 234, 234, 1); transition: all 0.5s ease; -moz-transition: all 0.5s ease; -webkit-transition: all 0.5s ease; -o-transition: all 0.5s ease; }
-.flat-box:hover, .flat-box:focus { transform: translate(0, -15px); -webkit-transform: translate(0, -15px); -o-transform: translate(0, -15px); -moz-transform: translate(0, -15px); }
 .colourway { height: 346px; }
 .colour1 { background-color: #f69679; }
 .colour2 { background-color: #6262D9; }
 .colour3 { background-color: #5C5CCC; }
 .colour4 { background-color: #5051B2; }
 .title { font-size: 15px; color: #9197a8; text-transform: uppercase; font-weight: 600; letter-spacing: 2px; padding: 20px 40px 0; }
-.feature-text { padding: 0px 20px 40px 40px; font-style: italic; color: #7a8387; font-size: 16px; }
-.design-content p { color: #abbcc3; line-height: 30px; font-weight: 300; }
 .controls a { color: #959595; transition: all 0.5s ease; -moz-transition: all 0.5s ease; -webkit-transition: all 0.5s ease; -o-transition: all 0.5s ease; }
 .controls a:hover, .controls a:focus { color: #555555; }
 .controls .prev { margin-right: 5px; }
@@ -231,12 +219,12 @@ footer { background-color: #5051B2; padding: 50px 0 50px; }
 footer p { color: #fff; line-height: 30px; }
 .footer-nav { list-style: none; padding: 0; }
 .footer-nav li a { display: block; color: #fff; padding: 5px; transition: all 0.5s ease; -moz-transition: all 0.5s ease; -webkit-transition: all 0.5s ease; -o-transition: all 0.5s ease; }
-.footer-nav li a:hover, .footer-nav li a:focus { text-decoration: none; color: #5051B2; }
+.footer-nav li a:hover, .footer-nav li a:focus { text-decoration: none; color: #191938; }
 .badge-btn { width: 60px; height: 62px; background: url('../img/footer-logo.png') no-repeat center center; text-indent: -99999px; display: block; margin: 65px auto 65px; -webkit-transition-duration: 3s; -moz-transition-duration: 3s; -o-transition-duration: 3s; transition-duration: 3s; -webkit-transition-property: -webkit-transform; -moz-transition-property: -moz-transform; -o-transition-property: -o-transform; transition-property: transform; }
 .badge-btn:hover, .badge-btn:focus { -webkit-transform: rotate(360deg); -moz-transform: rotate(360deg); -o-transform: rotate(360deg); }
 .footer-credit { font-size: 12px; text-transform: uppercase; letter-spacing: 5px; }
 footer a { color: #22234C; transition: all 0.5s ease; -moz-transition: all 0.5s ease; -webkit-transition: all 0.5s ease; -o-transition: all 0.5s ease; }
-footer a:hover, footer a:focus { color: #22234C; text-decoration: none; }
+footer a:hover, footer a:focus { color: #191938; text-decoration: none; }
 /* ==========================================================================
 Animations
 ========================================================================== */

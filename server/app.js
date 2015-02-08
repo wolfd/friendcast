@@ -1,85 +1,219 @@
 var express = require('express');
 var path = require('path');
-var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var passport = require('passport');
-var FacebookStrategy = require('passport-facebook').Strategy;
+var graph = require('fbgraph');
 
-var routes = require('./routes/index');
-var users = require('./routes/users');
-
+// Init app.
 var app = express();
+var models = require("./models");
 
-passport.use(new FacebookStrategy({
-    clientID: FACEBOOK_APP_ID,
-    clientSecret: FACEBOOK_APP_SECRET,
-    callbackURL: "http://localhost:3000/auth/facebook/callback",
-    enableProof: false
-  },
-  function(accessToken, refreshToken, profile, done) {
-    User.findOrCreate({ facebookId: profile.id }, function (err, user) {
-      return done(err, user);
-    });
-  }
-));
+var port = normalizePort(process.env.PORT || '3000');
+app.set('port', port);
 
-app.get('/auth/facebook',
-  passport.authenticate('facebook'));
-
-app.get('/auth/facebook/callback',
-  passport.authenticate('facebook', { failureRedirect: '/login' }),
-  function(req, res) {
-    // Successful authentication, redirect home.
-    res.redirect('/');
-  });
-
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
-
-// uncomment after placing your favicon in /public
-//app.use(favicon(__dirname + '/public/favicon.ico'));
+// Setup app.
 app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+//app.use(bodyParser.json());
+var urlEncodedParser = bodyParser.urlencoded({ extended: false });
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', routes);
-app.use('/users', users);
+// Init Facebook API.
+graph.setAppSecret(process.env.FACEBOOK_APP_SECRET);
 
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-    var err = new Error('Not Found');
-    err.status = 404;
-    next(err);
+// Init database middleware.
+models.sequelize.sync().then(function () {
+  var server = app.listen(app.get('port'), function() {});
+  server.on('listening', onListening);
+
+  function onListening() {
+    var addr = server.address();
+    var bind = typeof addr === 'string'
+      ? 'pipe ' + addr
+      : 'port ' + addr.port;
+  }
 });
 
-// error handlers
+/*
+Receive availability from user client.
 
-// development error handler
-// will print stacktrace
-if (app.get('env') === 'development') {
-    app.use(function(err, req, res, next) {
-        res.status(err.status || 500);
-        res.render('error', {
-            message: err.message,
-            error: err
-        });
+NEEDS:
+- access_token (facebook personal token)
+- start_time (time in seconds)
+- end_time (time in seconds)
+- blurb (brief text)
+*/
+app.post('/cast', urlEncodedParser, function(req, res) {
+
+    console.log(req.body);
+
+    // Set access token for Facebook.
+    if (req.body.access_token) {
+        graph.setAccessToken(req.body.access_token);
+    } else {
+        res.sendStatus(500);
+        res.end();
+    }
+
+    // Obtain personal ID from Facebook.
+    graph.get("/me", function(err, fb) {
+        if (fb) {
+            console.log(fb);
+            // Create db record.
+            models.Free.findOrCreate({ where: { fb_user_id: fb.id }, defaults: {
+                fb_user_id: fb.id,
+                start_time: req.body.start_time,
+                end_time: req.body.end_time,
+                blurb: req.body.blurb,
+                done: false
+            }}).spread(function(user, created) {
+                if (created) {
+                    console.log("db record created");
+                } else {
+                    console.log("db record updated");
+                }
+                res.sendStatus(200);
+                res.end();
+            });
+        } else {
+            console.error(err);
+        }
     });
+});
+
+/*
+Obtain available friends.
+
+NEEDS:
+- access_token (facebook personal token)
+
+PROVIDES:
+- List of available friends
+- [first_name]
+- [last_name]
+- [start_time]
+- [end_time]
+- [blurb]
+*/
+app.post('/reel', urlEncodedParser, function(req, res) {
+
+    // Set access token for Facebook.
+    if (req.body.access_token) {
+        graph.setAccessToken(req.body.access_token);
+    } else {
+        res.sendStatus(500);
+        res.end();
+    }
+
+    // Grab friend ids from Facebook.
+    var friendIds = new Array();
+    graph.get("/me/friends",  function(err, fb) {
+        if (fb.data) {
+            for (var i = 0; i < fb.data.length; i++) {
+                friendIds[friendIds.length] = fb.data[i].id;
+            }
+        } else {
+            console.error(err);
+            res.end();
+        }
+    });
+
+    var myStartTime = null;
+    var myEndTime = null;
+
+    // Obtain personal ID from Facebook.
+    graph.get("/me", function(err, fb) {
+        if (fb.id) {
+            models.Free.find({where: { fb_user_id: fb.id }}).then(function(myAccount) {
+                myStartTime = myAccount["start_time"];
+                myEndTime = myAccount["end_time"];
+            });
+        } else {
+            console.error(err);
+            res.end();
+        }
+    });
+
+    // Find available friends.
+    models.Free.findAll({ where: { fb_user_id: { in: friendIds }, start_time: { lte: myStartTime }, end_time: { gte: myEndTime } } })
+        .then(function(records) {
+
+        var jsonObject = {};
+        jsonObject["friends"] = new Array();
+        for (var i = 0; i < records.length; i++) {
+            var currFriend = jsonObject["friends"][i];
+
+            graph.get("/" + records["fb_user_id"], function(err, fb) {
+                if (fb.id) {
+                    currFriend["first_name"] = fb.first_name;
+                    currFriend["last_name"] = fb.last_name;
+                }
+            });
+
+            currFriend["start_time"] = records["start_time"];
+            currFriend["end_time"] = records["end_time"];
+            currFriend["blurb"] = records["blurb"];
+        }
+
+        res.end(JSON.stringify(jsonObject));
+    });
+});
+
+/*
+Clears your database record after finding a friend or end_time.
+
+NEEDS:
+- access_token
+*/
+app.post('/bye', urlEncodedParser, function(req, res) {
+
+    // Set access token for Facebook.
+    if (req.body.access_token) {
+        graph.setAccessToken(req.body.access_token);
+    } else {
+        res.sendStatus(500);
+        res.end();
+    }
+
+    // Obtain personal ID from Facebook.
+    graph.get("/me", function(err, fb) {
+        if (fb.id) {
+            models.Free.find({ where: { fb_user_id: { in: [fb.id] } } }).then(function(record) {
+                if (record) {
+                    record.destroy().on('success', function(result) {
+                        if (result && result.deletedAt) {
+                            res.sendStatus(200);
+                            res.end();
+                        }
+                    });
+                } else {
+                    console.error("no record found to delete");
+                    res.end();
+                }
+            });
+        } else {
+            console.error(err);
+            res.end();
+        }
+    });
+});
+
+/** ~~~~~~~~~~ +++++++++++ ~~~~~~~~~~ **/
+
+function normalizePort(val) {
+  var port = parseInt(val, 10);
+
+  if (isNaN(port)) {
+    // named pipe
+    return val;
+  }
+
+  if (port >= 0) {
+    // port number
+    return port;
+  }
+
+  return false;
 }
-
-// production error handler
-// no stacktraces leaked to user
-app.use(function(err, req, res, next) {
-    res.status(err.status || 500);
-    res.render('error', {
-        message: err.message,
-        error: {}
-    });
-});
-
 
 module.exports = app;

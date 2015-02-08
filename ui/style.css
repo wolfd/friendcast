@@ -2,7 +2,7 @@
 /* purple */
 /* green */
 body {
-  margin: 20px;
+  margin: 0;
   padding: 0; }
 
 .IndexBox {
@@ -14,6 +14,42 @@ body {
   font-family: sans-serif;
   text-align: center; }
 
+.Cast {
+  padding: 0 5px; }
+
+.TimeBox {
+  height: 20%;
+  font-size: 20pt;
+  text-align: center; }
+
+.SubmitBox {
+  width: 100%;
+  margin: 0 auto;
+  height: 20%;
+  font-size: 20pt; }
+
 .FreeButton {
   margin: 20px auto;
   padding: 20px; }
+
+p.name {
+  font-size: 10pt; }
+
+.select-fc {
+  margin: 10px auto; }
+
+.FriendBox img {
+  width: 64px;
+  height: 64px; }
+.FriendBox td {
+  line-height: 37px;
+  padding: 0;
+  vertical-align: middle; }
+.FriendBox td:first-child {
+  width: 5px;
+  height: 1px; }
+.FriendBox p {
+  padding: 0 5px;
+  margin: 0; }
+.FriendBox p.name {
+  font-size: 14pt; }
