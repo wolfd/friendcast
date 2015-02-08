@@ -20,7 +20,9 @@
       var LOGGED_IN = false;
       var TOKEN = "";
 
-      var API_ENDPOINT = "http://api.friendcast.io";
+      var API_ENDPOINT = "http://api.friendcast.io.ahgraph.wolfd.net";
+
+      $.ajax.isFake = false;
 
       $.ajax.fake.registerWebservice('http://api.friendcast.io/cast', function(data) {
           return {
@@ -116,9 +118,7 @@
         render: function() {
           return (
             <div className="LoginButton">
-              <a href="#" onClick={this.handleClick}>Login</a>
-              <div id="status">
-              </div>
+              <button onClick={this.handleClick}>Login</button>
             </div>
           );
         }
@@ -202,9 +202,9 @@
 
         goFish: function() {
           var send = {
-            token: TOKEN,
-            startTime: this.state.startTime,
-            endTime: this.state.endTime,
+            access_token: TOKEN,
+            start_time: this.state.startTime,
+            end_time: this.state.endTime,
             blurb: this.state.blurb,
           };
 
@@ -213,7 +213,6 @@
             fake: true,
             url: API_ENDPOINT + "/cast",
             data: send,
-            dataType: 'json',
             success: function(data) {
               console.log(data);
               //this.setState({data: data});
@@ -233,6 +232,24 @@
           });
         },
 
+        updateEndTime: function(time) {
+          setState({
+            viewStarted: this.state.viewStarted,
+            startTime: this.state.startTime,
+            endTime: time,
+            blurb: this.state.blurb,
+          });
+        },
+
+        updateBlurb: function(blurb) {
+          setState({
+            viewStarted: this.state.viewStarted,
+            startTime: this.state.startTime,
+            endTime: this.state.endTime,
+            blurb: blurb,
+          });
+        },
+
         render: function() {
           return (
             <div className="Cast">
@@ -248,23 +265,34 @@
 
       var TimeBox = React.createClass({
 
+        componentDidMount: function(select) {
+          var $el = $(this.getDOMNode());
+          $el.selectize({
+              persist: true,
+              create: true,
+              sortField: 'text',
+              onChange: this.onChange
+          });
+          
+        },
+
         render: function() {   
-          var numRows = 24;
+          var numRows = 16;
           var rows = [];
           for (var i=0; i < numRows; i++) {
             var actualTime = moment(this.props.viewStarted, "X").startOf('hour').add(i + parseInt(this.props.plus,10), 'hour');
             var ampm = actualTime.calendar();
-            rows.push(<option value={actualTime.unix()}>{ampm}</option>);
+            dirtyHax = ampm.replace('Today at ', '');
+            rows.push(<option value={actualTime.unix()}>{dirtyHax}</option>);
           }
-          return <select className="TimeBox form-control select-fc" onChange={this.fcChange}>{rows}</select>;
-
+          return <select className="TimeBox btn" onChange={this.fcChange}>{rows}</select>;
         }
       });
 
       var BlurbBox = React.createClass({
         render: function() {
           return (
-            <div className="BlurbBox">What do you want to do?</div>
+            <label>What do you want to do?<input type="text" className="BlurbBox"/></label>
           );
         }
       });
@@ -273,7 +301,7 @@
         render: function() {
           return (
             <Link to="/reel" onClick={this.props.submitIt}>
-              <button className="SubmitBox btn btn-primary btn-lg btn-block" type="button">
+              <button className="SubmitBox btn" type="button">
                 See who's around
               </button>
             </Link>
@@ -293,18 +321,20 @@
 
         loadFreeFriends: function() {
           var send = {
-            token: TOKEN,
+            access_token: TOKEN,
           };
 
           $.ajax({
-            type: "GET",
+            type: "POST",
             fake: true,
             url: API_ENDPOINT + "/reel",
             data: send,
-            dataType: 'json',
             success: function(data) {
               console.log(data);
-              this.setState({friends: data['friends']});
+              this.setState({
+                friendLoadId: this.state.friendLoadId,
+                friends: JSON.parse(data).friends,
+              });
             }.bind(this),
             error: function(xhr, status, err) {
               console.error(API_ENDPOINT + "/reel", status, err.toString());

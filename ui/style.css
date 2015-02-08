@@ -14,6 +14,20 @@ body {
   font-family: sans-serif;
   text-align: center; }
 
+.Cast {
+  padding: 0 5px; }
+
+.TimeBox {
+  height: 20%;
+  font-size: 20pt;
+  text-align: center; }
+
+.SubmitBox {
+  width: 100%;
+  margin: 0 auto;
+  height: 20%;
+  font-size: 20pt; }
+
 .FreeButton {
   margin: 20px auto;
   padding: 20px; }
