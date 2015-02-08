@@ -148,9 +148,9 @@ app.post('/reel', urlEncodedParser, function(req, res) {
                                 });
 
                                 if (records) {
-                                    currFriend["start_time"] = records.getDataValue('start_time');
-                                    currFriend["end_time"] = records.getDataValue('end_time');
-                                    currFriend["blurb"] = records.getDataValue('blurb');
+                                    currFriend["start_time"] = records['start_time'];
+                                    currFriend["end_time"] = records['end_time'];
+                                    currFriend["blurb"] = records['blurb'];
                                 }
                             }
 
