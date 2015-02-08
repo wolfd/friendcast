@@ -25,13 +25,6 @@ $light: #FFF;
   }
 }
 
-@mixin logo-text() {
-	color: $pending;
-	font-size: 40pt;
-	font-family: sans-serif;
-	text-align: center;
-}
-
 @mixin button-glow() {
 	color: $light;
 	font-size: 40pt;
@@ -49,7 +42,17 @@ body {
 }
 
 .LogoBox {
-	@include logo-text();
+	background-color: $pending;
+	color: $light;
+	font-size: 40pt;
+	font-family: sans-serif;
+	text-align: center;
+
+}
+
+.bagels {
+	//get bagels get money
+	margin-bottom: 10px;
 }
 
 .LoginButton {
@@ -61,7 +64,7 @@ body {
 }
 
 .TimeBox {
-	height: 20%;
+	height: 15%;
 	font-size: 20pt;
 	text-align: center;
 }
@@ -120,4 +123,16 @@ p.name {
 	p.freeUntil {
 
 	}
+}
+
+.IveMadePlans {
+	position: fixed;
+	text-align: center;
+	vertical-align: middle;
+	font-size: 12pt;
+	bottom: 0;
+	width: 100%;
+	height: 40px;
+	background-color: $busy;
+	color: $light;
 }
