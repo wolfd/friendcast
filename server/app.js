@@ -143,7 +143,7 @@ app.post('/reel', urlEncodedParser, function(req, res) {
                                 console.log("sup brah", returnable, returnable.length, records.length);
                                 if(returnable.length === records.length) {
                                     res.setHeader('Access-Control-Allow-Origin', '*');
-                                    res.end(JSON.stringify(returnable));
+                                    res.send(JSON.stringify(returnable)).end();
                                     return;
                                 }
                             };
