@@ -17,3 +17,6 @@ body {
 .FreeButton {
   margin: 20px auto;
   padding: 20px; }
+
+name {
+  font-size: 10pt; }

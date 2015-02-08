@@ -28,18 +28,34 @@
       var LOGGED_IN = false;
       var TOKEN = "";
 
-      var API_ENDPOINT = "http://localhost:8000/";
+      var API_ENDPOINT = "http://api.friendcast.io";
 
       $.ajax.fake.registerWebservice('http://api.friendcast.io/cast', function(data) {
-          return [{
-              "success": "true"
-          }]
+          return {
+            success: true
+          }
       });
 
       $.ajax.fake.registerWebservice('http://api.friendcast.io/reel', function(data) {
-          return [{
-              "friends": ""
-          }]
+          return {
+            friends: [
+              {
+                name: "Danny Towelg WFOlf",
+                face: "https://avatars1.githubusercontent.com/u/930169?v=3&s=400",
+                freeUntil: 1423360800
+              },
+              {
+                name: "LLILI GODDAMN DSLKDFJKSJLDF",
+                face: "https://avatars2.githubusercontent.com/u/7182205?v=3&s=400",
+                freeUntil: 1423370800
+              },
+              {
+                name: "CHRUIS GULLOOOOOO",
+                face: "https://avatars3.githubusercontent.com/u/138880?v=3&s=400",
+                freeUntil: 1423370800
+              },
+            ]
+          }
       });
 
       var LoginButton = React.createClass({
@@ -122,7 +138,7 @@
           TOKEN = token;
           this.setState({
             loggedIn : true,
-            token : token
+            token : token,
           });
           console.log("logged in");
         },
@@ -134,9 +150,8 @@
         render: function() {
           if(this.state.loggedIn) {
             return (
-              <div className="freeBox">
-                <FreeButton when="now" />
-                <FreeButton when="later" />
+              <div className="FreeBox">
+                <Cast />
               </div>
             );
           } else {
@@ -153,18 +168,6 @@
             <div className="LogoBox">
               Friend<b>Cast</b>
             </div>
-          );
-        }
-      });
-
-      var FreeButton = React.createClass({
-        render: function() {
-          return (
-            <Link to={"/cast/" + this.props.when} >
-              <button className="FreeButton btn btn-primary btn-lg btn-block" type="button" id={this.props.when}>
-                {this.props.when}
-              </button>
-            </Link>
           );
         }
       });
@@ -196,32 +199,32 @@
         mixins: [Router.State],
 
         getInitialState: function() {
-          var startTime = "";
-          if(this.getParams().when === "now") {
-            startTime = new Date().getHours();
-          }
+          var viewStarted = moment().unix();
           return {
-            startTime: startTime,
-            endTime: (startTime + 1) % 24,
-            blurb: ""
+            viewStarted: viewStarted,
+            startTime: moment(viewStarted, "X").startOf('hour').unix(),
+            endTime: moment(viewStarted, "X").add(2, 'hour').startOf('hour').unix(),
+            blurb: "",
           };
         },
 
         goFish: function() {
           var send = {
+            token: TOKEN,
             startTime: this.state.startTime,
             endTime: this.state.endTime,
-            blurb: this.state.blurb
-          }
+            blurb: this.state.blurb,
+          };
 
           $.ajax({
             type: "POST",
             fake: true,
             url: API_ENDPOINT + "/cast",
-            data: data,
+            data: send,
             dataType: 'json',
             success: function(data) {
-              this.setState({data: data});
+              console.log(data);
+              //this.setState({data: data});
             }.bind(this),
             error: function(xhr, status, err) {
               console.error(this.props.url, status, err.toString());
@@ -229,13 +232,22 @@
           });
         },
 
+        updateStartTime: function(time) {
+          setState({
+            viewStarted: this.state.viewStarted,
+            startTime: time,
+            endTime: this.state.endTime,
+            blurb: this.state.blurb,
+          });
+        },
+
         render: function() {
           return (
             <div className="Cast">
               {this.getParams().when}
-              <TimeBox onChange={this.updateStartTime} />
-              <TimeBox onChange={this.updateEndTime}/>
-              <BlurbBox onChange={this.updateBlurb}/>
+              <TimeBox fcChange={this.updateStartTime} viewStarted={this.state.viewStarted} plus="0"/>
+              <TimeBox fcChange={this.updateEndTime} viewStarted={this.state.viewStarted} plus="1"/>
+              <BlurbBox fcChange={this.updateBlurb}/>
               <SubmitBox submitIt={this.goFish}/>
             </div>
           );
@@ -243,26 +255,16 @@
       });
 
       var TimeBox = React.createClass({
-        render: function() {
-          var timeNow = new Date()
-          var hour = timeNow.getHours();
+
+        render: function() {   
           var numRows = 24;
           var rows = [];
           for (var i=0; i < numRows; i++) {
-            var thisHour = (hour + i) % 24;
-            var ampm = "";
-            if(thisHour > 12) {
-              ampm = (thisHour - 12) + " PM";
-            } else if(thisHour === 0) {
-              ampm = "12 AM";
-            } else if(thisHour === 12) {
-              ampm = "12 PM";
-            } else {
-              ampm = thisHour + " AM";
-            } 
-            rows.push(<option value={(hour + i) % 24}>{ampm}</option>);
+            var actualTime = moment(this.props.viewStarted, "X").startOf('hour').add(i + parseInt(this.props.plus,10), 'hour');
+            var ampm = actualTime.calendar();
+            rows.push(<option value={actualTime.unix()}>{ampm}</option>);
           }
-          return <select className="TimeBox">{rows}</select>;
+          return <select className="TimeBox" onChange={this.fcChange}>{rows}</select>;
 
         }
       });
@@ -290,10 +292,72 @@
       /////////////
 
       var Reel = React.createClass({
+        getInitialState: function() {
+          return {
+            friendLoadId: 0,
+            friends: [],
+          };
+        },
+
+        loadFreeFriends: function() {
+          var send = {
+            token: TOKEN,
+          };
+
+          $.ajax({
+            type: "GET",
+            fake: true,
+            url: API_ENDPOINT + "/reel",
+            data: send,
+            dataType: 'json',
+            success: function(data) {
+              console.log(data);
+              this.setState({friends: data['friends']});
+            }.bind(this),
+            error: function(xhr, status, err) {
+              console.error(API_ENDPOINT + "/reel", status, err.toString());
+            }.bind(this),
+          });
+        },
+
+        componentDidMount: function() {
+          this.loadFreeFriends();
+          this.setState({
+            friendLoadId: setInterval(this.loadFreeFriends, 10000),
+            friends: this.state.friends,
+          });
+        },
+
+        componentWillUnmount: function() {
+          clearInterval(this.state.friendLoadId);
+        },
+
         render: function() {
+          var friendNodes = this.state.friends.map(function (friend) {
+            console.log(friend);
+            return (
+              <FriendBox face={friend.face} name={friend.name} freeUntil={friend.freeUntil} />
+            );
+          });
+
           return (
             <div className="Reel">
-              I'M REEELING
+              {friendNodes}
+            </div>
+          );
+        }
+      });
+
+      var FriendBox = React.createClass({
+
+        render: function() {
+          var dirtyHax = moment(this.props.freeUntil, 'X').calendar();
+          dirtyHax = dirtyHax.replace('Today at ', '');
+          return (
+            <div className="FriendBox">
+              <img src={this.props.face} alt={this.props.name}/>
+              <p>{this.props.name}</p>
+              <p>Free until {dirtyHax}</p>
             </div>
           );
         }
@@ -310,7 +374,6 @@
       var routes = (
         <Route name="app" handler={App} path="/">
           <DefaultRoute handler={Index} />
-          <Route name="cast" handler={Cast} path="/cast/:when"/>
           <Route name="reel" handler={Reel} path="/reel"/>
           <NotFoundRoute handler={NotFound} />
         </Route>
@@ -322,6 +385,6 @@
       });
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react-router/0.11.6/react-router.min.js"></script>
-    <script src=""></script>
+    <script src="libs/moment.min.js"></script>
   </body>
 </html>
