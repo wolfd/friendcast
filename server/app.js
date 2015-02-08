@@ -110,6 +110,7 @@ app.post('/reel', urlEncodedParser, function(req, res) {
     // Grab friend ids from Facebook.
     graph.get("/me/friends",  function(err, fb) {
         var friendIds = [];
+        console.log("fabebuuk", fb);
         for (var i = 0; i < fb.data.length; i++) {
             friendIds.push(fb.data[i].id);
         }
