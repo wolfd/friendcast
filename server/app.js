@@ -61,7 +61,6 @@ app.post('/cast', urlEncodedParser, function(req, res) {
             console.log(fb);
             // Create db record.
             models.Free.findOrCreate({ where: { fb_user_id: fb.id }, defaults: {
-                fb_user_id: fb.id,
                 start_time: req.body.start_time,
                 end_time: req.body.end_time,
                 blurb: req.body.blurb,
