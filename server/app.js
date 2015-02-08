@@ -53,9 +53,7 @@ app.post('/cast', urlEncodedParser, function(req, res) {
             "client_id":      process.env.FACEBOOK_APP_ID
           , "client_secret":  process.env.FACEBOOK_APP_SECRET
         }, function (err, facebookRes) {
-           graph.setAccessToken(facebookRes.account_token);
-           console.log(facebookRes);
-           console.log("HLLLOOOOOO: " + facebookRes.account_token);
+           graph.setAccessToken(facebookRes.access_token);
         });
     } else {
         res.sendStatus(500);
@@ -109,8 +107,7 @@ app.post('/reel', urlEncodedParser, function(req, res) {
             "client_id":      process.env.FACEBOOK_APP_ID
           , "client_secret":  process.env.FACEBOOK_APP_SECRET
         }, function (err, facebookRes) {
-           graph.setAccessToken(facebookRes.account_token);
-           console.log(facebookRes.account_token);
+           graph.setAccessToken(facebookRes.access_token);
         });
     } else {
         res.sendStatus(500);
@@ -198,8 +195,7 @@ app.post('/bye', urlEncodedParser, function(req, res) {
             "client_id":      process.env.FACEBOOK_APP_ID
           , "client_secret":  process.env.FACEBOOK_APP_SECRET
         }, function (err, facebookRes) {
-           graph.setAccessToken(facebookRes.account_token);
-           console.log(facebookRes.account_token);
+           graph.setAccessToken(facebookRes.access_token);
         });
     } else {
         res.sendStatus(500);
