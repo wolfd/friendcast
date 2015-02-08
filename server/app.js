@@ -137,8 +137,8 @@ app.post('/reel', urlEncodedParser, function(req, res) {
 
     // Find available friends.
     // x1 <= y2 && y1 <= x2
-    models.Free.findAll({ where: db.Sequelize.and({ fb_user_id: { in: friendIds } },
-        db.Sequelize.and({start_time: { lte: myEndTime }}, {myStartTime: { lte: end_time }}))})
+    models.Free.findAll({ where: models.Sequelize.and({ fb_user_id: { in: friendIds } },
+        models.Sequelize.and({start_time: { lte: myEndTime }}, {myStartTime: { lte: end_time }}))})
         .then(function(records) {
 
         console.log(records);
