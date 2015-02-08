@@ -204,7 +204,7 @@ nav ul li a:hover, nav ul li a:focus { color: rgba(255, 255, 255, 1); text-decor
 .download-now { background: #6262D9 url('../img/ipadBG.png') no-repeat right 65px; background-size: 50%; }
 .download-now p { color: #fff; font-size: 16px; margin: 40px 30px 40px 0; line-height: 30px; }
 .download-btn { border: solid 3px #fff; border-radius: 3px; -webkit-border-radius: 3px; -moz-border-radius: 3px; font-size: 17px; letter-spacing: 2px; transition: all 0.5s ease; padding: 15px 70px; display: inline-block; color: #fff; margin-bottom: 185px; }
-.download-btn:hover, .download-btn:focus { text-decoration: none; border-color: #a58347; color: #a58347; }
+.download-btn:hover, .download-btn:focus { text-decoration: none; border-color: #191938; color: #191938; }
 .testimonials { background: #5b6869 url('../img/tBG01.jpg') no-repeat left center; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover; background-size: cover; padding: 130px 0; }
 .features { background: #fff url('../img/arrowBG.png') no-repeat center -1px; padding: 70px 0; }
 .features p { color: #7a8387; font-size: 16px; word-spacing: 2px; line-height: 30px; }
@@ -236,7 +236,7 @@ footer p { color: #fff; line-height: 30px; }
 .badge-btn:hover, .badge-btn:focus { -webkit-transform: rotate(360deg); -moz-transform: rotate(360deg); -o-transform: rotate(360deg); }
 .footer-credit { font-size: 12px; text-transform: uppercase; letter-spacing: 5px; }
 footer a { color: #22234C; transition: all 0.5s ease; -moz-transition: all 0.5s ease; -webkit-transition: all 0.5s ease; -o-transition: all 0.5s ease; }
-footer a:hover, footer a:focus { color: #22234C; text-decoration: none; }
+footer a:hover, footer a:focus { color: #191938; text-decoration: none; }
 /* ==========================================================================
 Animations
 ========================================================================== */
