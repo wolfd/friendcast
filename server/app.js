@@ -9,7 +9,7 @@ var multer = require('multer');
 
 // Init app.
 var app = express();
-var models = require("../models");
+var models = require("./models");
 
 var port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
@@ -21,36 +21,12 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(multer());
 
-// Accept Facebook auth.
-app.post('/auth', function(req, res) {
-    if (req.body.access_token) {
-        graph.setAccessToken(req.body.access_token);
-        res.sendStatus(201);
-    }
-});
-
 // Init Facebook API.
 graph.setAppSecret(process.env.FACEBOOK_APP_SECRET);
 
-app.post('/cast', function(req, res) {
-
-});
-
-// Obtain friends.
-app.post('/', function(req, res) {
-    graph.get("/me/friends",  function(err, fb) {
-        if (fb.data) {
-            res.json(fb.data);
-        } else {
-            fb.sendStatus(500);
-        }
-    });
-});
-
+// Init database middleware.
 models.sequelize.sync().then(function () {
-  var server = app.listen(app.get('port'), function() {
-    debug('Express server listening on port ' + server.address().port);
-  });
+  var server = app.listen(app.get('port'), function() {});
   server.on('error', onError);
   server.on('listening', onListening);
 
@@ -59,8 +35,118 @@ models.sequelize.sync().then(function () {
     var bind = typeof addr === 'string'
       ? 'pipe ' + addr
       : 'port ' + addr.port;
-    debug('Listening on ' + bind);
   }
+});
+
+// Receive availability from user client.
+app.post('/cast', function(req, res) {
+    var fbUserId = null;
+
+    // Set access token for Facebook.
+    if (req.body.access_token) {
+        graph.setAccessToken(req.body.access_token);
+    } else {
+        res.sendStatus(500);
+    }
+
+    // Obtain personal ID from Facebook.
+    graph.get("/me", function(err, fb) {
+        if (fb.id) {
+            fbUserId = fb.id;
+        } else {
+            res.sendStatus(500);
+        }
+    });
+
+    // Create db record.
+    models.Free.create({
+        fb_user_id: fbUserId,
+        start_time: req.body.start_time,
+        end_time: req.body.end_time,
+        blurb: req.body.blurb,
+        done: false
+    }).on('success', function() {
+        res.sendStatus(200);
+    });
+});
+
+// Obtain friends.
+app.post('/reel', function(req, res) {
+
+    // Set access token for Facebook.
+    if (req.body.access_token) {
+        graph.setAccessToken(req.body.access_token);
+    } else {
+        res.sendStatus(500);
+    }
+
+    // Grab friend ids from Facebook.
+    var friendIds = new Array();
+    var friendFirstNames = new Array();
+    var friendLastNames = new Array();
+    graph.get("/me/friends",  function(err, fb) {
+        if (fb.data) {
+            for (var i = 0; i < fb.data.length; i++) {
+                friendIds[friendIds.length] = fb.data[i].id;
+                friendFirstNames[friendFirstNames.length] = fb.data[i].name.split(" ")[0];
+                friendLastNames[friendLastNames.length] = fb.data[i].name.split(" ")[1];
+            }
+        } else {
+            res.sendStatus(500);
+        }
+    });
+
+    // Find avaiable friends.
+    models.Free.findAll({ where: { fb_user_id: { in: friendIds } } })
+        .then(function(records) {
+
+        var jsonObject = {};
+        jsonObject["friends"] = new Array();
+        for (var i = 0; i < records.length; i++) {
+            var currFriend = jsonObject["friends"][i];
+
+            graph.get("/" + records["fb_user_id"], function(err, fb) {
+                if (fb.id) {
+                    currFriend["first_name"] = fb.first_name;
+                    currFriend["last_name"] = fb.last_name;
+                }
+            });
+
+            currFriend["start_time"] = records["start_time"];
+            currFriend["end_time"] = records["end_time"];
+            currFriend["blurb"] = records["blurb"];
+        }
+
+        res.send(JSON.stringify(jsonObject));
+    });
+});
+
+app.post('/bye', function(req, res) {
+    var fbUserId = null;
+
+    // Set access token for Facebook.
+    if (req.body.access_token) {
+        graph.setAccessToken(req.body.access_token);
+    } else {
+        res.sendStatus(500);
+    }
+
+    // Obtain personal ID from Facebook.
+    graph.get("/me", function(err, fb) {
+        if (fb.id) {
+            fbUserId = fb.id;
+        } else {
+            res.sendStatus(500);
+        }
+    });
+
+    models.Free.find({ where: { fb_user_id: { in: [fbUserId] } } }).then(function(record) {
+        record.destroy().on('success', function(result) {
+            if (result && result.deletedAt) {
+                res.sendStatus(200);
+            }
+        });
+    });
 });
 
 /** ~~~~~~~~~~ +++++++++++ ~~~~~~~~~~ **/
