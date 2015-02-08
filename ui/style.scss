@@ -52,6 +52,27 @@ body {
 	@include logo-text();
 }
 
+.LoginButton {
+	font-size: 20pt;
+}
+
+.Cast {
+	padding: 0 5px;
+}
+
+.TimeBox {
+	height: 20%;
+	font-size: 20pt;
+	text-align: center;
+}
+
+.SubmitBox {
+	width: 100%;
+	margin: 0 auto;
+	height: 20%;
+	font-size: 20pt;
+}
+
 .FreeButton {
 	//@include button-text();
 
