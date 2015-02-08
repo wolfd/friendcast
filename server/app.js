@@ -76,7 +76,7 @@ app.post('/cast', function(req, res) {
                 res.sendStatus(200);
             });
         } else {
-            res.sendStatus(500);
+            console.error(err);
         }
     });
 });
