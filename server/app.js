@@ -4,55 +4,114 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var passport = require('passport');
-var FacebookStrategy = require('passport-facebook').Strategy;
+var graph = require('fbgraph');
+var multer = require('multer');
 
-var routes = require('./routes/index');
-var users = require('./routes/users');
-
+// Init app.
 var app = express();
+var models = require("../models");
 
-passport.use(new FacebookStrategy({
-    clientID: FACEBOOK_APP_ID,
-    clientSecret: FACEBOOK_APP_SECRET,
-    callbackURL: "http://localhost:3000/auth/facebook/callback",
-    enableProof: false
-  },
-  function(accessToken, refreshToken, profile, done) {
-    User.findOrCreate({ facebookId: profile.id }, function (err, user) {
-      return done(err, user);
-    });
-  }
-));
+var port = normalizePort(process.env.PORT || '3000');
+app.set('port', port);
 
-app.get('/auth/facebook',
-  passport.authenticate('facebook'));
-
-app.get('/auth/facebook/callback',
-  passport.authenticate('facebook', { failureRedirect: '/login' }),
-  function(req, res) {
-    // Successful authentication, redirect home.
-    res.redirect('/');
-  });
-
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
-
-// uncomment after placing your favicon in /public
-//app.use(favicon(__dirname + '/public/favicon.ico'));
+// Setup app.
 app.use(logger('dev'));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(multer());
 
-app.use('/', routes);
-app.use('/users', users);
+// Accept Facebook auth.
+app.post('/auth', function(req, res) {
+    if (req.body.access_token) {
+        graph.setAccessToken(req.body.access_token);
+        res.sendStatus(201);
+    }
+});
+
+// Init Facebook API.
+graph.setAppSecret(process.env.FACEBOOK_APP_SECRET);
+
+app.post('/cast', function(req, res) {
+
+});
+
+// Obtain friends.
+app.post('/', function(req, res) {
+    graph.get("/me/friends",  function(err, fb) {
+        if (fb.data) {
+            res.json(fb.data);
+        } else {
+            fb.sendStatus(500);
+        }
+    });
+});
+
+models.sequelize.sync().then(function () {
+  var server = app.listen(app.get('port'), function() {
+    debug('Express server listening on port ' + server.address().port);
+  });
+  server.on('error', onError);
+  server.on('listening', onListening);
+
+  function onListening() {
+    var addr = server.address();
+    var bind = typeof addr === 'string'
+      ? 'pipe ' + addr
+      : 'port ' + addr.port;
+    debug('Listening on ' + bind);
+  }
+});
+
+/** ~~~~~~~~~~ +++++++++++ ~~~~~~~~~~ **/
+
+function normalizePort(val) {
+  var port = parseInt(val, 10);
+
+  if (isNaN(port)) {
+    // named pipe
+    return val;
+  }
+
+  if (port >= 0) {
+    // port number
+    return port;
+  }
+
+  return false;
+}
+
+/**
+ * Event listener for HTTP server "error" event.
+ */
+
+function onError(error) {
+  if (error.syscall !== 'listen') {
+    throw error;
+  }
+
+  var bind = typeof port === 'string'
+    ? 'Pipe ' + port
+    : 'Port ' + port
+
+  // handle specific listen errors with friendly messages
+  switch (error.code) {
+    case 'EACCES':
+      console.error(bind + ' requires elevated privileges');
+      process.exit(1);
+      break;
+    case 'EADDRINUSE':
+      console.error(bind + ' is already in use');
+      process.exit(1);
+      break;
+    default:
+      throw error;
+  }
+}
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-    var err = new Error('Not Found');
+    var err = new Error('YOU UCKED FUP.');
     err.status = 404;
     next(err);
 });
@@ -80,6 +139,5 @@ app.use(function(err, req, res, next) {
         error: {}
     });
 });
-
 
 module.exports = app;
