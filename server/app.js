@@ -150,6 +150,7 @@ app.post('/reel', urlEncodedParser, function(req, res) {
 
                             returnable = records.forEach(function(curVal) {
                                 graph.get("/" + curVal.dataValues.fb_user_id, function(err, fb) {
+                                    currFriend = {};
                                     if (fb.id) {
                                         currFriend["first_name"] = fb.first_name;
                                         currFriend["last_name"] = fb.last_name;
