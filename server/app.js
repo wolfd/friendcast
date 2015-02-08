@@ -112,7 +112,7 @@ app.post('/reel', urlEncodedParser, function(req, res) {
         console.log(fb.data);
         if (fb) {
             for (var i = 0; i < fb.data.length; i++) {
-                friendIds[friendIds.length] = fb.data[i].id;
+                friendIds[i] = fb.data[i].id;
             }
         } else {
             console.error(err);
