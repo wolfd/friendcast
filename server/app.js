@@ -45,16 +45,20 @@ NEEDS:
 */
 app.post('/cast', urlEncodedParser, function(req, res) {
 
+    console.log(req.body);
+
     // Set access token for Facebook.
     if (req.body.access_token) {
         graph.setAccessToken(req.body.access_token);
     } else {
         res.sendStatus(500);
+        res.end();
     }
 
     // Obtain personal ID from Facebook.
     graph.get("/me", function(err, fb) {
         if (fb) {
+            console.log(fb);
             // Create db record.
             models.Free.findOrCreate({ where: { fb_user_id: fb.id }, defaults: {
                 fb_user_id: fb.id,
