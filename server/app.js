@@ -59,6 +59,7 @@ app.post('/cast', urlEncodedParser, function(req, res) {
     graph.get("/me", function(err, fb) {
         if (fb) {
             console.log(fb);
+            console.log("SEE: " + req.body.start_time + ", " + req.body.end_time);
             // Create db record.
             models.Free.findOrCreate({ where: { fb_user_id: fb.id }, defaults: {
                 start_time: req.body.start_time,
