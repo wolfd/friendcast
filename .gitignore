@@ -2,3 +2,4 @@
 .DS_Store
 .sass-cache/
 server/node_modules/
+npm-debug.log

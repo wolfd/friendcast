@@ -4,7 +4,6 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var graph = require('fbgraph');
-var multer = require('multer');
 
 // Init app.
 var app = express();
@@ -18,7 +17,6 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use(multer());
 
 // Init Facebook API.
 graph.setAppSecret(process.env.FACEBOOK_APP_SECRET);
@@ -56,7 +54,7 @@ app.post('/cast', function(req, res) {
 
     // Obtain personal ID from Facebook.
     graph.get("/me", function(err, fb) {
-        if (fb.id) {
+        if (fb) {
             var fbUserId = fb.id;
             console.log(fbUserId);
 
@@ -152,7 +150,7 @@ app.post('/reel', function(req, res) {
             currFriend["blurb"] = records["blurb"];
         }
 
-        res.send(JSON.stringify(jsonObject));
+        res.end(JSON.stringify(jsonObject));
     });
 });
 
