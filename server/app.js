@@ -111,6 +111,7 @@ app.post('/reel', urlEncodedParser, function(req, res) {
     graph.get("/me/friends",  function(err, fb) {
         console.log(fb.data);
         for (var i = 0; i < fb.data.length; i++) {
+            console.log(fb.data[i].id);
             friendIds.push(fb.data[i].id);
         }
     });
