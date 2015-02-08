@@ -55,6 +55,7 @@ app.post('/cast', urlEncodedParser, function(req, res) {
         }, function (err, facebookRes) {
            graph.setAccessToken(facebookRes.account_token);
            console.log(facebookRes);
+           console.log("HLLLOOOOOO: " + facebookRes.account_token);
         });
     } else {
         res.sendStatus(500);
