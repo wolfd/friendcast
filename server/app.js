@@ -108,6 +108,7 @@ app.post('/reel', urlEncodedParser, function(req, res) {
           , "client_secret":  process.env.FACEBOOK_APP_SECRET
         }, function (err, facebookRes) {
            graph.setAccessToken(facebookRes.access_token);
+           console.log("REALLLY: " + facebookRes.access_token);
         });
     } else {
         res.sendStatus(500);
