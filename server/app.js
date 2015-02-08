@@ -55,6 +55,13 @@ app.post('/cast', urlEncodedParser, function(req, res) {
         res.end();
     }
 
+    graph.extendAccessToken({
+        "client_id":      process.env.FACEBOOK_APP_ID
+      , "client_secret":  process.env.FACEBOOK_APP_SECRET
+    }, function (err, facebookRes) {
+       console.log(facebookRes);
+    });
+
     // Obtain personal ID from Facebook.
     graph.get("/me", function(err, fb) {
         if (fb) {
