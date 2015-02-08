@@ -125,9 +125,8 @@ app.post('/reel', urlEncodedParser, function(req, res) {
     graph.get("/me", function(err, fb) {
         if (fb.id) {
             models.Free.find({where: { fb_user_id: fb.id }}).then(function(myAccount) {
-                console.log(myAccount);
-                myStartTime = myAccount["start_time"];
-                myEndTime = myAccount["end_time"];
+                myStartTime = myAccount.getDataValue('start_time');
+                myEndTime = myAccount.getDataValue('end_time');
             });
         } else {
             console.error(err);
@@ -151,9 +150,9 @@ app.post('/reel', urlEncodedParser, function(req, res) {
                 }
             });
 
-            currFriend["start_time"] = records["start_time"];
-            currFriend["end_time"] = records["end_time"];
-            currFriend["blurb"] = records["blurb"];
+            currFriend["start_time"] = records.getDataValue('start_time');
+            currFriend["end_time"] = records.getDataValue('end_time');
+            currFriend["blurb"] = records.getDataValue('blurb');
         }
 
         res.end(JSON.stringify(jsonObject));
