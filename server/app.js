@@ -14,8 +14,8 @@ app.set('port', port);
 
 // Setup app.
 app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+//app.use(bodyParser.json());
+var urlEncodedParser = bodyParser.urlencoded({ extended: false });
 app.use(cookieParser());
 
 // Init Facebook API.
@@ -43,7 +43,7 @@ NEEDS:
 - end_time (time in seconds)
 - blurb (brief text)
 */
-app.post('/cast', function(req, res) {
+app.post('/cast', urlEncodedParser, function(req, res) {
 
     // Set access token for Facebook.
     if (req.body.access_token) {
@@ -55,12 +55,9 @@ app.post('/cast', function(req, res) {
     // Obtain personal ID from Facebook.
     graph.get("/me", function(err, fb) {
         if (fb) {
-            var fbUserId = fb.id;
-            console.log(fbUserId);
-
             // Create db record.
-            models.Free.findOrCreate({ where: { fb_user_id: fbUserId }, defaults: {
-                fb_user_id: fbUserId,
+            models.Free.findOrCreate({ where: { fb_user_id: fb.id }, defaults: {
+                fb_user_id: fb.id,
                 start_time: req.body.start_time,
                 end_time: req.body.end_time,
                 blurb: req.body.blurb,
@@ -93,7 +90,7 @@ PROVIDES:
 - [end_time]
 - [blurb]
 */
-app.post('/reel', function(req, res) {
+app.post('/reel', urlEncodedParser, function(req, res) {
 
     // Set access token for Facebook.
     if (req.body.access_token) {
@@ -160,7 +157,7 @@ Clears your database record after finding a friend or end_time.
 NEEDS:
 - access_token
 */
-app.post('/bye', function(req, res) {
+app.post('/bye', urlEncodedParser, function(req, res) {
 
     // Set access token for Facebook.
     if (req.body.access_token) {
