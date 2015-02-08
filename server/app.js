@@ -71,6 +71,7 @@ app.post('/cast', urlEncodedParser, function(req, res) {
                         blurb: req.body.blurb,
                         done: false
                     });
+                    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:8888');
                     res.end();
                 }
             });
@@ -103,6 +104,7 @@ app.post('/reel', urlEncodedParser, function(req, res) {
         graph.setAccessToken(req.body.access_token);
     } else {
         res.sendStatus(500);
+        res.setHeader('Access-Control-Allow-Origin', 'http://localhost:8888');
         res.end();
     }
 
@@ -141,7 +143,7 @@ app.post('/reel', urlEncodedParser, function(req, res) {
                                 jsonObject["friends"][i] = {};
                                 var currFriend = jsonObject["friends"][i];
 
-                                graph.get("/" + records[i].dataValues.fb_user_id, function(err, fb, currFriend) {
+                                graph.get("/" + records[i].dataValues.fb_user_id, function(err, fb) {
                                     if (fb.id) {
                                         currFriend["first_name"] = fb.first_name;
                                         currFriend["last_name"] = fb.last_name;
@@ -155,6 +157,7 @@ app.post('/reel', urlEncodedParser, function(req, res) {
                                 });
                             }
 
+                            res.setHeader('Access-Control-Allow-Origin', 'http://localhost:8888');
                             res.end(JSON.stringify(jsonObject));
                         });
                     }
@@ -190,17 +193,20 @@ app.post('/bye', urlEncodedParser, function(req, res) {
                 if (record) {
                     record.destroy().on('success', function(result) {
                         if (result && result.deletedAt) {
+                            res.setHeader('Access-Control-Allow-Origin', 'http://localhost:8888');
                             res.sendStatus(200);
                             res.end();
                         }
                     });
                 } else {
                     console.error("no record found to delete");
+                    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:8888');
                     res.end();
                 }
             });
         } else {
             console.error("bye error: " + err);
+            res.setHeader('Access-Control-Allow-Origin', 'http://localhost:8888');
             res.end();
         }
     });
