@@ -47,6 +47,7 @@ app.post('/cast', urlEncodedParser, function(req, res) {
 
     // Set access token for Facebook.
     if (req.body.access_token) {
+        graph.setAccessToken(req.body.access_token);
         graph.extendAccessToken({
             "access_token":   req.body.access_token,
             "client_id":      process.env.FACEBOOK_APP_ID
@@ -101,6 +102,7 @@ app.post('/reel', urlEncodedParser, function(req, res) {
 
     // Set access token for Facebook.
     if (req.body.access_token) {
+        graph.setAccessToken(req.body.access_token);
         graph.extendAccessToken({
             "access_token":   req.body.access_token,
             "client_id":      process.env.FACEBOOK_APP_ID
@@ -189,6 +191,7 @@ app.post('/bye', urlEncodedParser, function(req, res) {
 
     // Set access token for Facebook.
     if (req.body.access_token) {
+        graph.setAccessToken(req.body.access_token);
         graph.extendAccessToken({
             "access_token":   req.body.access_token,
             "client_id":      process.env.FACEBOOK_APP_ID
