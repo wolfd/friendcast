@@ -114,7 +114,7 @@
         handleClick: function() {
           FB.login(function(response) {
               this.checkLoginState();
-          }, { scope: 'public_profile,basic_info,user_friends'});
+          }, { scope: 'public_profile,user_friends'});
         },
 
         render: function() {
