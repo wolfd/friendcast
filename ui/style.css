@@ -2,7 +2,7 @@
 /* purple */
 /* green */
 body {
-  margin: 20px;
+  margin: 0;
   padding: 0; }
 
 .IndexBox {
@@ -18,5 +18,24 @@ body {
   margin: 20px auto;
   padding: 20px; }
 
-name {
+p.name {
   font-size: 10pt; }
+
+.select-fc {
+  margin: 10px auto; }
+
+.FriendBox img {
+  width: 64px;
+  height: 64px; }
+.FriendBox td {
+  line-height: 37px;
+  padding: 0;
+  vertical-align: middle; }
+.FriendBox td:first-child {
+  width: 5px;
+  height: 1px; }
+.FriendBox p {
+  padding: 0 5px;
+  margin: 0; }
+.FriendBox p.name {
+  font-size: 14pt; }

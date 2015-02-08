@@ -1,18 +1,10 @@
 <html>
   <head>
-    <title>Hello React</title>
-    <script src="http://fb.me/react-0.12.2.js"></script>
-    <script src="http://fb.me/JSXTransformer-0.12.2.js"></script>
-    <script src="http://code.jquery.com/jquery-1.10.0.min.js"></script>
-    <script src="libs/jquery.ajax.fake.js"></script>
+    
     <title>FriendCast</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
-
-    <!-- Latest compiled and minified JavaScript -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+    <link type="text/css" rel="stylesheet" href="libs/css/materialize.min.css"  media="screen,projection"/>
     <link rel="stylesheet" type="text/css" href="style.css">
   </head>
   <body>
@@ -264,7 +256,7 @@
             var ampm = actualTime.calendar();
             rows.push(<option value={actualTime.unix()}>{ampm}</option>);
           }
-          return <select className="TimeBox" onChange={this.fcChange}>{rows}</select>;
+          return <select className="TimeBox form-control select-fc" onChange={this.fcChange}>{rows}</select>;
 
         }
       });
@@ -341,24 +333,28 @@
           });
 
           return (
-            <div className="Reel">
+            <table className="Reel bordered">
               {friendNodes}
-            </div>
+            </table>
           );
         }
       });
 
       var FriendBox = React.createClass({
-
         render: function() {
           var dirtyHax = moment(this.props.freeUntil, 'X').calendar();
           dirtyHax = dirtyHax.replace('Today at ', '');
           return (
-            <div className="FriendBox">
-              <img src={this.props.face} alt={this.props.name}/>
-              <p>{this.props.name}</p>
-              <p>Free until {dirtyHax}</p>
-            </div>
+            <tr className="FriendBox">
+              <td></td>
+              <td>
+                <img className="circle" src={this.props.face} alt={this.props.name}/>
+              </td>
+              <td>
+                <p className="name">{this.props.name}</p>
+                <p className="freeUntil">Free until {dirtyHax}</p>
+              </td>
+            </tr>
           );
         }
       });
@@ -384,7 +380,12 @@
         React.render(<Handler/>, document.body);
       });
     </script>
+    <script src="http://fb.me/react-0.12.2.js"></script>
+    <script src="http://fb.me/JSXTransformer-0.12.2.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react-router/0.11.6/react-router.min.js"></script>
     <script src="libs/moment.min.js"></script>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script src="libs/jquery.ajax.fake.js"></script>
+    <script type="text/javascript" src="libs/js/materialize.min.js"></script>
   </body>
 </html>

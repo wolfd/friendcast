@@ -40,7 +40,7 @@ $light: #FFF;
 }
 
 body {
-	margin: 20px;
+	margin: 0;
 	padding: 0;
 }
 
@@ -61,6 +61,42 @@ body {
 	padding: 20px;
 }
 
-name {
+p.name {
 	font-size: 10pt;
+}
+
+.select-fc {
+	margin: 10px auto;
+}
+
+.FriendBox {
+	img {
+		width: 64px;
+		height: 64px;
+	}
+
+	td {
+		line-height:37px;
+		padding: 0;
+		vertical-align: middle;
+	}
+
+	td:first-child {
+		// soo much haax
+		width: 5px;
+		height: 1px;
+	}
+
+	p {
+		padding: 0 5px;
+		margin: 0;
+	}
+
+	p.name {
+		font-size: 14pt;
+	}
+
+	p.freeUntil {
+
+	}
 }
