@@ -140,7 +140,7 @@ app.post('/reel', urlEncodedParser, function(req, res) {
 
                             addReturnable = function(cf, returnable) {
                                 returnable.push(cf);
-                                console.log(returnable);
+                                console.log("sup brah", returnable);
                                 if(returnable.length === records.length) {
                                     res.setHeader('Access-Control-Allow-Origin', '*');
                                     res.end(JSON.stringify(returnable));
