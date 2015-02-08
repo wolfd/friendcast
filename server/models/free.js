@@ -3,8 +3,8 @@
 module.exports = function(sequelize, DataTypes) {
   var Free = sequelize.define("Free", {
     fb_user_id: { type: DataTypes.STRING, unique: true, allowNull: false },
-    start_time: { type: DataTypes.BIGINT, allowNull: false },
-    end_time: { type: DataTypes.BIGINT, allowNull: false },
+    start_time: { type: DataTypes.BIGINT.UNSIGNED, allowNull: false },
+    end_time: { type: DataTypes.BIGINT.UNSIGNED, allowNull: false },
     blurb: { type: DataTypes.STRING, allowNull: false },
     done: DataTypes.BOOLEAN
   }, {
