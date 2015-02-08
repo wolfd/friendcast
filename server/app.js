@@ -134,7 +134,7 @@ app.post('/reel', urlEncodedParser, function(req, res) {
                             models.Sequelize.and({start_time: { lte: myEndTime }}, {end_time: { gt: myStartTime }}))})
                             .then(function(records) {
 
-                            console.log(records);
+                            console.log("soem records", records);
 
                             var returnable = [];
 
