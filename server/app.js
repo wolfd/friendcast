@@ -56,7 +56,7 @@ app.post('/cast', urlEncodedParser, function(req, res) {
     // Obtain personal ID from Facebook.
     graph.get("/me", function(err, fb) {
         if (fb) {
-            console.log("cast fb: " + fb);
+            console.log(fb);
             // Create db record.
             models.Free.find(fb.id).then(function(record) {
                 if (record) {
@@ -72,7 +72,7 @@ app.post('/cast', urlEncodedParser, function(req, res) {
                 }
             });
         } else {
-            console.error("cast error: " + err);
+            console.error(err);
         }
     });
 });
