@@ -231,7 +231,7 @@ footer { background-color: #5051B2; padding: 50px 0 50px; }
 footer p { color: #fff; line-height: 30px; }
 .footer-nav { list-style: none; padding: 0; }
 .footer-nav li a { display: block; color: #fff; padding: 5px; transition: all 0.5s ease; -moz-transition: all 0.5s ease; -webkit-transition: all 0.5s ease; -o-transition: all 0.5s ease; }
-.footer-nav li a:hover, .footer-nav li a:focus { text-decoration: none; color: #5051B2; }
+.footer-nav li a:hover, .footer-nav li a:focus { text-decoration: none; color: #191938; }
 .badge-btn { width: 60px; height: 62px; background: url('../img/footer-logo.png') no-repeat center center; text-indent: -99999px; display: block; margin: 65px auto 65px; -webkit-transition-duration: 3s; -moz-transition-duration: 3s; -o-transition-duration: 3s; transition-duration: 3s; -webkit-transition-property: -webkit-transform; -moz-transition-property: -moz-transform; -o-transition-property: -o-transform; transition-property: transform; }
 .badge-btn:hover, .badge-btn:focus { -webkit-transform: rotate(360deg); -moz-transform: rotate(360deg); -o-transform: rotate(360deg); }
 .footer-credit { font-size: 12px; text-transform: uppercase; letter-spacing: 5px; }
