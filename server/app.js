@@ -101,7 +101,8 @@ app.post('/reel', urlEncodedParser, function(req, res) {
     if (req.body.access_token) {
         graph.setAccessToken(req.body.access_token);
     } else {
-        throw error;
+        res.sendStatus(500);
+        res.end();
     }
 
     // Grab friend ids from Facebook.
@@ -113,6 +114,7 @@ app.post('/reel', urlEncodedParser, function(req, res) {
             }
         } else {
             console.error(err);
+            res.end();
         }
     });
 
@@ -128,6 +130,7 @@ app.post('/reel', urlEncodedParser, function(req, res) {
             });
         } else {
             console.error(err);
+            res.end();
         }
     });
 
@@ -185,10 +188,12 @@ app.post('/bye', urlEncodedParser, function(req, res) {
                     });
                 } else {
                     console.error("no record found to delete");
+                    res.end();
                 }
             });
         } else {
             console.error(err);
+            res.end();
         }
     });
 });
