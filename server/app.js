@@ -54,8 +54,8 @@ app.post('/cast', urlEncodedParser, function(req, res) {
     }
 
     graph.extendAccessToken({
-        "access_token":   req.body.access_token
-      , "client_id":      process.env.FACEBOOK_APP_ID
+        //"access_token":   req.body.access_token,
+        "client_id":      process.env.FACEBOOK_APP_ID
       , "client_secret":  process.env.FACEBOOK_APP_SECRET
     }, function (err, facebookRes) {
        graph.setAccessToken(facebookRes.account_token);
