@@ -53,6 +53,8 @@ app.post('/cast', urlEncodedParser, function(req, res) {
         res.end();
     }
 
+    console.log(req.body);
+
     // Obtain personal ID from Facebook.
     graph.get("/me", function(err, fb) {
         if (fb) {
