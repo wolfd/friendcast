@@ -69,6 +69,7 @@ app.post('/cast', urlEncodedParser, function(req, res) {
                     console.log("db record updated");
                 }
                 res.sendStatus(200);
+                res.end();
             });
         } else {
             console.error(err);
@@ -164,6 +165,7 @@ app.post('/bye', urlEncodedParser, function(req, res) {
         graph.setAccessToken(req.body.access_token);
     } else {
         res.sendStatus(500);
+        res.end();
     }
 
     // Obtain personal ID from Facebook.
@@ -174,6 +176,7 @@ app.post('/bye', urlEncodedParser, function(req, res) {
                     record.destroy().on('success', function(result) {
                         if (result && result.deletedAt) {
                             res.sendStatus(200);
+                            res.end();
                         }
                     });
                 } else {
