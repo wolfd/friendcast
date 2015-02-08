@@ -38,9 +38,16 @@ models.sequelize.sync().then(function () {
   }
 });
 
-// Receive availability from user client.
+/*
+Receive availability from user client.
+
+NEEDS:
+- access_token (facebook personal token)
+- start_time (time in seconds)
+- end_time (time in seconds)
+- blurb (brief text)
+*/
 app.post('/cast', function(req, res) {
-    var fbUserId = null;
 
     // Set access token for Facebook.
     if (req.body.access_token) {
@@ -52,52 +59,74 @@ app.post('/cast', function(req, res) {
     // Obtain personal ID from Facebook.
     graph.get("/me", function(err, fb) {
         if (fb.id) {
-            fbUserId = fb.id;
+            var fbUserId = fb.id;
+            console.log(fbUserId);
+
+            // Create db record.
+            models.Free.findOrCreate({ where: { fb_user_id: fbUserId }, defaults: {
+                fb_user_id: fbUserId,
+                start_time: req.body.start_time,
+                end_time: req.body.end_time,
+                blurb: req.body.blurb,
+                done: false
+            }}).spread(function(user, created) {
+                if (created) {
+                    console.log("db record created");
+                } else {
+                    console.log("db record updated");
+                }
+                res.sendStatus(200);
+            });
         } else {
             res.sendStatus(500);
         }
     });
-
-    // Create db record.
-    models.Free.create({
-        fb_user_id: fbUserId,
-        start_time: req.body.start_time,
-        end_time: req.body.end_time,
-        blurb: req.body.blurb,
-        done: false
-    }).on('success', function() {
-        res.sendStatus(200);
-    });
 });
 
-// Obtain friends.
+/*
+Obtain available friends.
+
+NEEDS:
+- access_token (facebook personal token)
+*/
 app.post('/reel', function(req, res) {
 
     // Set access token for Facebook.
     if (req.body.access_token) {
         graph.setAccessToken(req.body.access_token);
     } else {
-        res.sendStatus(500);
+        throw error;
     }
 
     // Grab friend ids from Facebook.
     var friendIds = new Array();
-    var friendFirstNames = new Array();
-    var friendLastNames = new Array();
     graph.get("/me/friends",  function(err, fb) {
         if (fb.data) {
             for (var i = 0; i < fb.data.length; i++) {
                 friendIds[friendIds.length] = fb.data[i].id;
-                friendFirstNames[friendFirstNames.length] = fb.data[i].name.split(" ")[0];
-                friendLastNames[friendLastNames.length] = fb.data[i].name.split(" ")[1];
             }
         } else {
-            res.sendStatus(500);
+            console.error(err);
         }
     });
 
-    // Find avaiable friends.
-    models.Free.findAll({ where: { fb_user_id: { in: friendIds } } })
+    var myStartTime = null;
+    var myEndTime = null;
+
+    // Obtain personal ID from Facebook.
+    graph.get("/me", function(err, fb) {
+        if (fb.id) {
+            models.Free.find({where: { fb_user_id: fb.id }}).then(function(myAccount) {
+                myStartTime = myAccount["start_time"];
+                myEndTime = myAccount["end_time"];
+            });
+        } else {
+            console.error(err);
+        }
+    });
+
+    // Find available friends.
+    models.Free.findAll({ where: { fb_user_id: { in: friendIds }, start_time: { lte: myStartTime }, end_time: { gte: myEndTime } } })
         .then(function(records) {
 
         var jsonObject = {};
@@ -121,8 +150,13 @@ app.post('/reel', function(req, res) {
     });
 });
 
+/*
+Clears your database record after finding a friend or end_time.
+
+NEEDS:
+- access_token
+*/
 app.post('/bye', function(req, res) {
-    var fbUserId = null;
 
     // Set access token for Facebook.
     if (req.body.access_token) {
@@ -134,18 +168,20 @@ app.post('/bye', function(req, res) {
     // Obtain personal ID from Facebook.
     graph.get("/me", function(err, fb) {
         if (fb.id) {
-            fbUserId = fb.id;
+            models.Free.find({ where: { fb_user_id: { in: [fb.id] } } }).then(function(record) {
+                if (record) {
+                    record.destroy().on('success', function(result) {
+                        if (result && result.deletedAt) {
+                            res.sendStatus(200);
+                        }
+                    });
+                } else {
+                    console.error("no record found to delete");
+                }
+            });
         } else {
-            res.sendStatus(500);
+            console.error(err);
         }
-    });
-
-    models.Free.find({ where: { fb_user_id: { in: [fbUserId] } } }).then(function(record) {
-        record.destroy().on('success', function(result) {
-            if (result && result.deletedAt) {
-                res.sendStatus(200);
-            }
-        });
     });
 });
 
