@@ -110,6 +110,7 @@ app.post('/reel', urlEncodedParser, function(req, res) {
     var friendIds = new Array();
     graph.get("/me/friends",  function(err, fb) {
         console.log(fb.data);
+        console.log("LENGTH: " + fb.data.length);
         for (var i = 0; i < fb.data.length; i++) {
             friendIds[i] = fb.data[i].id;
         }
