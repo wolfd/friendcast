@@ -141,16 +141,16 @@ app.post('/reel', urlEncodedParser, function(req, res) {
                                 jsonObject["friends"][i] = {};
                                 var currFriend = jsonObject["friends"][i];
 
-                                graph.get("/" + records[i]["dataValues"]["fb_user_id"], function(err, fb) {
+                                graph.get("/" + records[i].dataValues.fb_user_id, function(err, fb) {
                                     if (fb.id) {
                                         currFriend["first_name"] = fb.first_name;
                                         currFriend["last_name"] = fb.last_name;
                                     }
 
                                     if (records) {
-                                        currFriend["start_time"] = records[i]["dataValues"]['start_time'];
-                                        currFriend["end_time"] = records[i]["dataValues"]['end_time'];
-                                        currFriend["blurb"] = records[i]["dataValues"]['blurb'];
+                                        currFriend["start_time"] = records[i].dataValues.start_time;
+                                        currFriend["end_time"] = records[i].dataValues.end_time;
+                                        currFriend["blurb"] = records[i].dataValues.blurb;
                                     }
                                 });
                             }
