@@ -111,59 +111,57 @@ app.post('/reel', urlEncodedParser, function(req, res) {
     graph.get("/me/friends",  function(err, fb) {
         console.log(fb.data);
         for (var i = 0; i < fb.data.length; i++) {
-            console.log(fb.data[i].id);
             friendIds.push(fb.data[i].id);
         }
-    });
+        console.log(friendIds);
 
-    console.log(friendIds);
+        var myStartTime = null;
+        var myEndTime = null;
 
-    var myStartTime = null;
-    var myEndTime = null;
-
-    // Obtain personal ID from Facebook.
-    graph.get("/me", function(err, fb) {
-        if (fb.id) {
-            models.Free.find({where: { fb_user_id: fb.id }}).then(function(myAccount) {
-                if (myAccount) {
-                    myStartTime = myAccount.getDataValue('start_time');
-                    myEndTime = myAccount.getDataValue('end_time');
-                }
-            });
-        } else {
-            console.error(err);
-            res.end();
-        }
-    });
-
-    // Find available friends.
-    // x1 <= y2 && x2 > y1
-    models.Free.findAll({ where: models.Sequelize.and({ fb_user_id: { in: friendIds } },
-        models.Sequelize.and({start_time: { lte: myEndTime }}, {end_time: { gt: myStartTime }}))})
-        .then(function(records) {
-
-        console.log(records);
-
-        var jsonObject = {};
-        jsonObject["friends"] = new Array();
-        for (var i = 0; i < records.length; i++) {
-            var currFriend = jsonObject["friends"][i];
-
-            graph.get("/" + records["fb_user_id"], function(err, fb) {
-                if (fb.id) {
-                    currFriend["first_name"] = fb.first_name;
-                    currFriend["last_name"] = fb.last_name;
-                }
-            });
-
-            if (records) {
-                currFriend["start_time"] = records.getDataValue('start_time');
-                currFriend["end_time"] = records.getDataValue('end_time');
-                currFriend["blurb"] = records.getDataValue('blurb');
+        // Obtain personal ID from Facebook.
+        graph.get("/me", function(err, fb) {
+            if (fb.id) {
+                models.Free.find({where: { fb_user_id: fb.id }}).then(function(myAccount) {
+                    if (myAccount) {
+                        myStartTime = myAccount.getDataValue('start_time');
+                        myEndTime = myAccount.getDataValue('end_time');
+                    }
+                });
+            } else {
+                console.error(err);
+                res.end();
             }
-        }
+        });
 
-        res.end(JSON.stringify(jsonObject));
+        // Find available friends.
+        // x1 <= y2 && x2 > y1
+        models.Free.findAll({ where: models.Sequelize.and({ fb_user_id: { in: friendIds } },
+            models.Sequelize.and({start_time: { lte: myEndTime }}, {end_time: { gt: myStartTime }}))})
+            .then(function(records) {
+
+            console.log(records);
+
+            var jsonObject = {};
+            jsonObject["friends"] = new Array();
+            for (var i = 0; i < records.length; i++) {
+                var currFriend = jsonObject["friends"][i];
+
+                graph.get("/" + records["fb_user_id"], function(err, fb) {
+                    if (fb.id) {
+                        currFriend["first_name"] = fb.first_name;
+                        currFriend["last_name"] = fb.last_name;
+                    }
+                });
+
+                if (records) {
+                    currFriend["start_time"] = records.getDataValue('start_time');
+                    currFriend["end_time"] = records.getDataValue('end_time');
+                    currFriend["blurb"] = records.getDataValue('blurb');
+                }
+            }
+
+            res.end(JSON.stringify(jsonObject));
+        });
     });
 });
 
