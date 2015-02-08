@@ -58,7 +58,6 @@ app.post('/cast', urlEncodedParser, function(req, res) {
     // Obtain personal ID from Facebook.
     graph.get("/me", function(err, fb) {
         if (fb) {
-            console.log("SEE: " + req.body.start_time + ", " + req.body.end_time);
             // Create db record.
             models.Free.find(fb.id).then(function(record) {
                 if (record) {
@@ -116,6 +115,8 @@ app.post('/reel', urlEncodedParser, function(req, res) {
         }
     });
 
+    console.log("friend ids: " + friendIds);
+
     var myStartTime = null;
     var myEndTime = null;
 
@@ -134,8 +135,11 @@ app.post('/reel', urlEncodedParser, function(req, res) {
         }
     });
 
+    // x1 <= y2 && y1 <= x2
+
     // Find available friends.
-    models.Free.findAll({ where: { fb_user_id: { in: friendIds }, start_time: { lte: myStartTime }, end_time: { gte: myEndTime } } })
+    models.Free.findAll({ where: models.sequelize.and({ fb_user_id: { in: friendIds } },
+        {models.sequelize.and({start_time: { lte: myEndTime }}, {myStartTime: { lte: end_time }})})
         .then(function(records) {
 
         console.log(records);
