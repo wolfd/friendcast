@@ -20,26 +20,26 @@
       var LOGGED_IN = false;
       var TOKEN = "";
 
-      var API_ENDPOINT = "http://api.friendcast.io.ahgraph.wolfd.net";
+      var API_ENDPOINT = "http://api.friendcast.io";
 
       $.ajax.isFake = false;
 
       $.ajax.fake.registerWebservice('http://api.friendcast.io/cast', function(data) {
-          return {
+          return JSON.stringify({
             success: true
-          }
+          });
       });
 
       $.ajax.fake.registerWebservice('http://api.friendcast.io/reel', function(data) {
-          return {
+          return JSON.stringify({
             friends: [
               {
-                name: "Danny Towelg WFOlf",
+                name: "Danny Towelg WOlf",
                 face: "https://avatars1.githubusercontent.com/u/930169?v=3&s=400",
                 freeUntil: 1423360800
               },
               {
-                name: "LLILI GODDAMN DSLKDFJKSJLDF",
+                name: "LLILI DSLKDFJKSJLDF",
                 face: "https://avatars2.githubusercontent.com/u/7182205?v=3&s=400",
                 freeUntil: 1423370800
               },
@@ -49,7 +49,7 @@
                 freeUntil: 1423370800
               },
             ]
-          }
+          });
       });
 
       var LoginButton = React.createClass({
@@ -146,7 +146,7 @@
         render: function() {
           if(this.state.loggedIn) {
             return (
-              <div className="FreeBox">
+              <div className="FreeBox container">
                 <Cast />
               </div>
             );
@@ -162,7 +162,7 @@
         render: function() {
           return (
             <div className="LogoBox">
-              Friend<b>Cast</b>
+              <p className="z-depth-2 bagels">Friend<b>Cast</b></p>
             </div>
           );
         }
@@ -182,7 +182,9 @@
         render: function() {
           return (
             <div className="Index">
-              <LogoBox />
+              <div className="row">
+                <LogoBox />
+              </div>
               <FreeBox />
             </div>
           );
@@ -258,7 +260,9 @@
           return (
             <div className="Cast">
               {this.getParams().when}
+              From
               <TimeBox fcChange={this.updateStartTime} viewStarted={this.state.viewStarted} plus="0"/>
+              To
               <TimeBox fcChange={this.updateEndTime} viewStarted={this.state.viewStarted} plus="1"/>
               <BlurbBox fcChange={this.updateBlurb}/>
               <SubmitBox submitIt={this.goFish}/>
@@ -268,18 +272,6 @@
       });
 
       var TimeBox = React.createClass({
-
-        componentDidMount: function(select) {
-          var $el = $(this.getDOMNode());
-          $el.selectize({
-              persist: true,
-              create: true,
-              sortField: 'text',
-              onChange: this.onChange
-          });
-
-        },
-
         render: function() {
           var numRows = 16;
           var rows = [];
@@ -358,6 +350,23 @@
           clearInterval(this.state.friendLoadId);
         },
 
+        bye: function() {
+          var bs = {'access_token': TOKEN};
+          $.ajax({
+            type: "POST",
+            fake: true,
+            url: API_ENDPOINT + "/bye",
+            data: bs,
+            success: function(data) {
+              console.log(data);
+              window.location = "/";
+            }.bind(this),
+            error: function(xhr, status, err) {
+              console.error(API_ENDPOINT + "/bye", status, err.toString());
+            }.bind(this),
+          });
+        },
+
         render: function() {
           var friendNodes = this.state.friends.map(function (friend) {
             console.log(friend);
@@ -367,9 +376,20 @@
           });
 
           return (
-            <table className="Reel bordered">
-              {friendNodes}
-            </table>
+            <span>
+              <table className="Reel bordered">
+                {friendNodes}
+              </table>
+              <IveMadePlans onClick={this.bye}/>
+            </span>
+          );
+        }
+      });
+
+      var IveMadePlans = React.createClass({
+        render: function() {
+          return (
+            <div className="IveMadePlans">I've Made Plans</div>
           );
         }
       });

@@ -9,16 +9,23 @@ body {
   width: 100%; }
 
 .LogoBox {
-  color: #9625e8;
+  background-color: #9625e8;
+  color: white;
   font-size: 40pt;
   font-family: sans-serif;
   text-align: center; }
+
+.bagels {
+  margin-bottom: 10px; }
+
+.LoginButton {
+  font-size: 20pt; }
 
 .Cast {
   padding: 0 5px; }
 
 .TimeBox {
-  height: 20%;
+  height: 15%;
   font-size: 20pt;
   text-align: center; }
 
@@ -53,3 +60,14 @@ p.name {
   margin: 0; }
 .FriendBox p.name {
   font-size: 14pt; }
+
+.IveMadePlans {
+  position: fixed;
+  text-align: center;
+  vertical-align: middle;
+  font-size: 12pt;
+  bottom: 0;
+  width: 100%;
+  height: 40px;
+  background-color: #ff232f;
+  color: white; }
