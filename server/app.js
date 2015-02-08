@@ -138,7 +138,7 @@ app.post('/reel', urlEncodedParser, function(req, res) {
 
                             var returnable = [];
 
-                            addReturnable = function(cf) {
+                            addReturnable = function(cf, returnable) {
                                 returnable.push(cf);
                                 console.log(returnable);
                                 if(returnable.length === records.length) {
@@ -148,7 +148,7 @@ app.post('/reel', urlEncodedParser, function(req, res) {
                                 }
                             };
 
-                            returnable = records.forEach(function(curVal) {
+                            records.forEach(function(curVal) {
                                 graph.get("/" + curVal.dataValues.fb_user_id, function(err, fb) {
                                     currFriend = {};
                                     if (fb.id) {
@@ -162,9 +162,9 @@ app.post('/reel', urlEncodedParser, function(req, res) {
                                         currFriend["blurb"] = curVal.dataValues.blurb;
                                     }
 
-                                    addReturnable(currFriend);
+                                    addReturnable(currFriend, returnable);
                                 });
-                            });
+                            }, returnable);
                         });
                     }
                 });
