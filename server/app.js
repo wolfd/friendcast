@@ -149,16 +149,16 @@ app.post('/reel', urlEncodedParser, function(req, res) {
                             };
 
                             returnable = records.forEach(function(curVal) {
-                                graph.get("/" + records[i].dataValues.fb_user_id, function(err, fb) {
+                                graph.get("/" + curVal.dataValues.fb_user_id, function(err, fb) {
                                     if (fb.id) {
                                         currFriend["first_name"] = fb.first_name;
                                         currFriend["last_name"] = fb.last_name;
                                     }
 
                                     if (records) {
-                                        currFriend["start_time"] = records[i].dataValues.start_time;
-                                        currFriend["end_time"] = records[i].dataValues.end_time;
-                                        currFriend["blurb"] = records[i].dataValues.blurb;
+                                        currFriend["start_time"] = curVal.dataValues.start_time;
+                                        currFriend["end_time"] = curVal.dataValues.end_time;
+                                        currFriend["blurb"] = curVal.dataValues.blurb;
                                     }
 
                                     addReturnable(currFriend);
