@@ -136,7 +136,7 @@ app.post('/reel', urlEncodedParser, function(req, res) {
                             console.log(records);
 
                             var jsonObject = {};
-                            jsonObject["friends"] = new Array();
+                            jsonObject["friends"] = [];
                             for (var i = 0; i < records.length; i++) {
                                 var currFriend = jsonObject["friends"][i];
 
@@ -145,13 +145,13 @@ app.post('/reel', urlEncodedParser, function(req, res) {
                                         currFriend["first_name"] = fb.first_name;
                                         currFriend["last_name"] = fb.last_name;
                                     }
-                                });
 
-                                if (records) {
-                                    currFriend["start_time"] = records['start_time'];
-                                    currFriend["end_time"] = records['end_time'];
-                                    currFriend["blurb"] = records['blurb'];
-                                }
+                                    if (records) {
+                                        currFriend["start_time"] = records['start_time'];
+                                        currFriend["end_time"] = records['end_time'];
+                                        currFriend["blurb"] = records['blurb'];
+                                    }
+                                });
                             }
 
                             res.end(JSON.stringify(jsonObject));
